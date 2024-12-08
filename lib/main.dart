@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
-import 'views/id_verification_screen.dart';
+import 'package:sabeel/views/home_screen.dart';
+import 'views/verification_screens/id_verification_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SplashScreen(),
+    return MaterialApp(
+      home: const SplashScreen(),
+      routes: {
+        '/splash': (context) => const SplashScreen(),
+        '/idVerification': (context) => const IdVerificationScreen(),
+        '/home': (context) => const HomeScreen(),
+      },
     );
   }
 }
