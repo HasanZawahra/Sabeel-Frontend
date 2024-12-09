@@ -61,7 +61,7 @@ class IdVerificationConfirmationScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Handle Continue - navigate to home screen
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/home');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -75,8 +75,8 @@ class IdVerificationConfirmationScreen extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  // Handle Continue - navigate to home screen
-                  Navigator.pushNamed(context, '/home');
+                  // Handle Try Again - navigate back to ID verification screen
+                  Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[300],

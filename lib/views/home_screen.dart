@@ -1,117 +1,182 @@
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart'; // Import GoogleFonts
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final SpeechToText speech = SpeechToText();
-  String transcribedText = '';
-  bool _isListening = false;
+  SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _lastWords = '';
 
-  Future<void> _startListening() async {
-    bool available = await speech.initialize(
-      onStatus: (status) => setState(() {}),
-      onError: (error) => print("Error: $error"),
-    );
-    if (available) {
-      setState(() {
-        _isListening = true;
-      });
-      speech.listen(onResult: (result) {
-        setState(() {
-          transcribedText = result.recognizedWords;
-        });
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    _initSpeech();
   }
 
-  Future<void> _stopListening() async {
-    if (_isListening) {
-      await speech.stop();
-      setState(() {
-        _isListening = false;
-      });
-    }
-    _sendToServer(transcribedText);
+  /// This has to happen only once per app
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
   }
 
-  Future<void> _sendToServer(String text) async {
-    final url = Uri.parse('YOUR_API_ENDPOINT'); //Replace with your endpoint
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer YOUR_API_KEY', //Replace with your API key
-    };
-    final body = jsonEncode({'text': text});
+  /// Each time to start a speech recognition session
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
 
-    try {
-      final response = await http.post(url, headers: headers, body: body);
-      if (response.statusCode == 200) {
-        print('Transcription sent successfully!');
-      } else {
-        print('Error sending transcription: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error sending transcription: $e');
-    }
+  /// Manually stop the active speech recognition session
+  /// Note that there are also timeouts that each platform enforces
+  /// and the SpeechToText plugin supports setting timeouts on the
+  /// listen method.
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  /// This is the callback that the SpeechToText plugin calls when
+  /// the platform returns recognized words.
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _lastWords = result.recognizedWords;
+      debugPrint('Recognized words: $_lastWords');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.lightGreen, Colors.red],
+            colors: [
+              Color(0xFFEEFEE9), // 0%
+              Color(0xFFCEF8BF), // 68%
+              Color(0xFFF8B6B6), // 100%
+            ],
+            stops: [0.0, 0.68, 1.0], // Add stops for smoother gradient
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'New Waypoint',
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  _isListening ? _stopListening() : _startListening();
-                },
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.lightGreen,
-                  child: Icon(
-                    _isListening ? Icons.mic : Icons.mic_off,
-                    size: 40,
-                    color: Colors.black,
+        child: Stack(
+          children: [
+            Padding(
+              // Added padding for better alignment
+              padding: const EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.topLeft, // Align to top-left
+                child: Container(
+                  margin: EdgeInsets.only(top: 75), // Add top margin
+                  child: Text(
+                    'New Waypoint',
+                    style: GoogleFonts.roboto(
+                      // Use Roboto font
+                      fontSize: 85,
+                      fontWeight: FontWeight.bold,
+                      height: 0.8, // Reduce line height
+                    ),
                   ),
                 ),
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  //Handle SOS button press here
-                  print("SOS pressed!");
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  textStyle:
-                      TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                child: Text('SOS'),
+            ),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 20), // Added space for better layout
+                  GestureDetector(
+                    onTap: () {
+                      _speechToText.isNotListening
+                          ? _startListening()
+                          : _stopListening();
+                    },
+                    child: FractionallySizedBox(
+                      widthFactor: 0.8,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFF85AB59),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              spreadRadius: 3,
+                              blurRadius: 17,
+                              offset:
+                                  Offset(0, 22), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 250,
+                          backgroundColor: Colors.transparent,
+                          child: Transform.scale(
+                            scaleY: 1.2, // Scale the shape to make it more oval
+                            child: Icon(
+                              _speechToText.isNotListening
+                                  ? Icons.mic_off
+                                  : Icons.mic,
+                              size: 200,
+                              color: Colors.black
+                                  .withOpacity(0.7), // Make the icon less black
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 10.0,
+                                  color: Colors.black.withOpacity(0.2),
+                                  offset: Offset(5.0, 5.0),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: EdgeInsets.only(bottom: 20), // Add bottom margin
+                width: MediaQuery.of(context).size.width *
+                    0.9, // 75% of screen width
+                height: 120,
+                child: ElevatedButton(
+                  onPressed: () {
+                    //Handle SOS button press here
+                    debugPrint("SOS pressed!");
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFB42A2A),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(8), // Make the button boxy
+                    ),
+                    textStyle: GoogleFonts.roboto(
+                      fontSize: 85,
+                      fontWeight: FontWeight.w900, // Bolder text
+                      letterSpacing: 2.0, // More letter spacing
+                    ),
+                    minimumSize: const Size(double.infinity, 60),
+                    shadowColor: Colors.black.withOpacity(0.6),
+                    elevation: 20,
+                  ),
+                  child: const Text('SOS'),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
