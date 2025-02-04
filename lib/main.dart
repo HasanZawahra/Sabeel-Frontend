@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sabeel/views/home_screen.dart';
 import 'package:sabeel/constants/routes.dart';
+import 'package:sabeel/views/verification_screens/id_verification_secreen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -12,6 +13,7 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       routes: {
         splashRoute : (context) => const SplashScreen(),
+        idVerificationRoute : (context) => IdVerificationSecreen(),
         homeRoute: (context) => const HomeScreen(),
       },
     );
@@ -38,7 +40,9 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Image.asset('assets/splashscreen-en.gif'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){},
+        onPressed: (){
+          Navigator.pushNamed(context, idVerificationRoute);
+        },
         child: const Icon(Icons.arrow_forward),
       ),
     );
