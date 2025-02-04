@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sabeel/views/home_screen.dart';
 import 'package:sabeel/constants/routes.dart';
-import 'package:sabeel/views/verification_screens/id_verification_secreen.dart';
+import 'package:sabeel/views/id_verification_secreen.dart';
+import 'package:sabeel/views/map_download_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
         splashRoute : (context) => const SplashScreen(),
         idVerificationRoute : (context) => IdVerificationSecreen(),
         homeRoute: (context) => const HomeScreen(),
+        mapDownloadRoute: (context) => const MapDownloadScreen(),
       },
     );
   }
