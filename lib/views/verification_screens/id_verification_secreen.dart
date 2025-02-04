@@ -13,7 +13,7 @@ class IdVerificationSecreen extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
-          iconSize: 30,
+          iconSize: 35,
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -25,9 +25,9 @@ class IdVerificationSecreen extends StatelessWidget {
           children: [
             Text(
               "Enter Your Credentials",
-              style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 70),
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -59,12 +59,6 @@ class IdVerificationSecreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onHover: (value) => {
-                      ElevatedButton.styleFrom(
-                        shadowColor:  Color.fromARGB(38, 69, 67, 67),
-                        backgroundColor: Colors.grey.shade900,
-                      ),
-                    },
                     onPressed: () {},
                     child: Text("Sign In", style: TextStyle(color: Colors.white)),
                   ),
@@ -73,38 +67,21 @@ class IdVerificationSecreen extends StatelessWidget {
                     onPressed: () {},
                     child: Text("Forgot password?", style: TextStyle(color: Colors.blue, fontSize: 16)),
                   ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {},
+                    child: Text("Sign In As a Geust", style: TextStyle(color: Colors.white)),
+                  ),
                 ],
               ),
             ),
-            Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(60, 197, 197, 197),
-                    minimumSize: Size(165, 50),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                  ),
-                  onPressed: () {},
-                  child: Text("Cancel"),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    minimumSize: Size(165, 50),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                  ),
-                  onPressed: () {},
-                  child: Text("Continue", style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
           ],
         ),
       ),
