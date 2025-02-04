@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:sabeel/constants/routes.dart';
 
 
 class IdVerificationSecreen extends StatelessWidget {
@@ -51,24 +52,7 @@ class IdVerificationSecreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 24),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      minimumSize: Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: Text("Sign In", style: TextStyle(color: Colors.white)),
-                  ),
-                  SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text("Forgot password?", style: TextStyle(color: Colors.blue, fontSize: 16)),
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
+                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       minimumSize: Size(double.infinity, 50),
@@ -77,7 +61,29 @@ class IdVerificationSecreen extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {},
+                    child: Text("Sign In", style: TextStyle(color: Colors.white)),
+                    
+                  ),
+                  SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text("Forgot password?", style: TextStyle(color: Colors.blue, fontSize: 16)),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, mapDownloadRoute);
+                    },
                     child: Text("Sign In As a Geust", style: TextStyle(color: Colors.white)),
+
                   ),
                 ],
               ),
