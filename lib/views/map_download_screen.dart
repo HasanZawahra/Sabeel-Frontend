@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sabeel/constants/maps_names.dart';
+import 'package:sabeel/constants/routes.dart';
 
 class MapDownloadScreen extends StatefulWidget {
   const MapDownloadScreen({super.key});
@@ -11,7 +12,7 @@ class MapDownloadScreen extends StatefulWidget {
 class _MapDownloadScreenState extends State<MapDownloadScreen> {
   int size = maps_names.length;
   List<Container> maps = [];
-
+  
   @override
   void initState() {
     super.initState();
@@ -29,7 +30,9 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        onPressed: () {  },
+        onPressed: () { 
+          Navigator.of(context).pushNamedAndRemoveUntil(mapDownloadProgressRoute, (route) => false); 
+          },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

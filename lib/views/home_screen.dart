@@ -13,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
+  bool sos = false;
   String _lastWords = '';
 
   @override
@@ -143,7 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            Align(
+            if(sos)
+        Align(
               alignment: Alignment.bottomCenter,
               child: Container(
                 margin: EdgeInsets.only(bottom: 20), // Add bottom margin
