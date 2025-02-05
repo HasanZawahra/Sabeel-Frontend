@@ -3,6 +3,7 @@ import 'package:sabeel/views/home_screen.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/views/id_verification_secreen.dart';
 import 'package:sabeel/views/map_download_screen.dart';
+import 'package:sabeel/views/map_downloading_progress_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
         idVerificationRoute : (context) => IdVerificationSecreen(),
         homeRoute: (context) => const HomeScreen(),
         mapDownloadRoute: (context) => const MapDownloadScreen(),
+        mapDownloadProgressRoute: (context) => const MapDownloadingProgress(),
       },
     );
   }
