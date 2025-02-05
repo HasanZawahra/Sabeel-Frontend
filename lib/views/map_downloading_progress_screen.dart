@@ -16,14 +16,14 @@ double progress = 0.0;
 
 void _startProgress() {
   if (progress < 1.0 && _isProgressActive) {
-    Future.delayed(Duration(milliseconds: 50), () {
+    Future.delayed(Duration(milliseconds: 100), () {
       if (_isProgressActive) {
         setState(() {
           progress += 0.01;
         });
         if (progress >= 1.0) {
           _isProgressActive = false;
-          Navigator.pushNamed(context, idVerificationRoute);
+          Navigator.pushNamed(context, homeRoute);
         } else {
           _startProgress();
         }
@@ -43,19 +43,6 @@ void dispose() {
   _isProgressActive = false;
   super.dispose();
 }
-
- 
-
-// void _startProgress() {
-//   if (progress < 1.0) {
-//     Future.delayed(Duration(milliseconds: 100), () {
-//       setState(() {
-//         if (progress < 1.0) progress += 0.01;
-//       });
-//       _startProgress();
-//     });
-//   }
-// }
 
   @override
   Widget build(BuildContext context) {
