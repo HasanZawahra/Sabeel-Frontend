@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sabeel/constants/routes.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:google_fonts/google_fonts.dart'; // Import GoogleFonts
@@ -12,21 +13,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
+  // bool _speechEnabled = false;
   bool sos = false;
   String _lastWords = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _initSpeech();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _initSpeech();
+  // }
 
   /// This has to happen only once per app
-  void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-    setState(() {});
-  }
+  // void _initSpeech() async {
+  //   _speechEnabled = await _speechToText.initialize();
+  //   setState(() {});
+  // }
 
   /// Each time to start a speech recognition session
   void _startListening() async {
@@ -55,6 +56,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushNamed(splashRoute);
+          },
+          iconSize: 35)
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

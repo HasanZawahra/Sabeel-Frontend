@@ -1,10 +1,33 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:sabeel/constants/routes.dart';
 
 
-class IdVerificationSecreen extends StatelessWidget {
+
+
+class IdVerificationSecreen extends StatefulWidget {
+  @override
+  _IdVerificationSecreenState createState() => _IdVerificationSecreenState();
+}
+
+class _IdVerificationSecreenState extends State<IdVerificationSecreen> {
+  late final TextEditingController _email;
+  late final TextEditingController _password;
+
+  @override
+  void initState() {
+    _email = TextEditingController();
+    _password = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,14 +61,21 @@ class IdVerificationSecreen extends StatelessWidget {
               child: Column(
                 children: [
                   TextField(
+                    controller: _email,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      labelText: "Student Number",
                       border: OutlineInputBorder(),
+                      labelText: 'Email Adress',
                     ),
                   ),
                   SizedBox(height: 24),
                   TextField(
+                    controller: _password,
                     obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
                     decoration: InputDecoration(
                       labelText: "Password",
                       border: OutlineInputBorder(),

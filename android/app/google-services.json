@@ -2,9 +2,28 @@
   "project_info": {
     "project_number": "464126619485",
     "project_id": "sabeel-45b3a",
-    "storage_bucket": "sabeel-45b3a.appspot.com"
+    "storage_bucket": "sabeel-45b3a.firebasestorage.app"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464126619485:android:a2c66af7fcb4f8f1b802b4",
+        "android_client_info": {
+          "package_name": "com.example.sabeel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3YIrDPSf94IRQoNhf2YOELmxgDoPrkiA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:464126619485:android:f4ff66baea78c1e5b802b4",
