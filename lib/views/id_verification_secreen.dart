@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sabeel/constants/routes.dart';
+import 'package:sabeel/services/auth/auth_exceptions.dart';
+import 'package:sabeel/services/auth/auth_service.dart';
+import 'package:sabeel/utils/show_error_dialog.dart';
 
 
 
@@ -89,15 +92,40 @@ class _IdVerificationSecreenState extends State<IdVerificationSecreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                    onPressed: () {},
+                    ), 
+                    onPressed: () async {
+                  final email = _email.text;
+                  final password = _password.text;
+                  try {
+                  await AuthService.firebase().logIn(email: email, password: password);
+                    Navigator.pushNamed(context, mapDownloadRoute);
+                  
+                  }
+                  on UserNotFoundAuthException{
+                    showErrorDialog(context, "User not found");
+                  }
+                  on WrongPasswordAuthException{
+                    showErrorDialog(context, "Wrong password");
+                  }
+                  on InvalidEmailAuthException{
+                    showErrorDialog(context, "Invalid email");
+                  }
+                  on GenericAuthException{
+                    showErrorDialog(context, "An error occurred");
+                  }
+              }, 
                     child: Text("Sign In", style: TextStyle(color: Colors.white)),
                     
                   ),
                   SizedBox(height: 8),
                   TextButton(
                     onPressed: () {},
-                    child: Text("Forgot password?", style: TextStyle(color: Colors.blue, fontSize: 16)),
+                    child: Text("Forgot password?", style: TextStyle(color: Colors.blue, fontSize: 18)),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "OR",
+                    style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 16),
                   ElevatedButton(
