@@ -23,7 +23,7 @@ void _startProgress() {
         });
         if (progress >= 1.0) {
           _isProgressActive = false;
-          Navigator.pushNamed(context, homeRoute);
+          Navigator.pushNamedAndRemoveUntil(context, homeRoute , (route) => false);
         } else {
           _startProgress();
         }

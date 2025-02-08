@@ -58,16 +58,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFEEFEE9),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
         leading: AuthService.firebase().currentUser == null
             ? IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.of(context).pushNamed(mapDownloadRoute);
+                  Navigator.of(context).pushNamedAndRemoveUntil(mapDownloadRoute , (route) => false);
                 },
-                iconSize: 35,
+                // iconSize: 35,
               )
             : null,
         actions: [ if(AuthService.firebase().currentUser != null) PopupMenuButton<MenuAction>(onSelected: (value) async {

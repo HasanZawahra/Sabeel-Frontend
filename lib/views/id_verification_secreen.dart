@@ -35,13 +35,6 @@ class _IdVerificationSecreenState extends State<IdVerificationSecreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          iconSize: 35,
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -98,7 +91,7 @@ class _IdVerificationSecreenState extends State<IdVerificationSecreen> {
                   final password = _password.text;
                   try {
                   await AuthService.firebase().logIn(email: email, password: password);
-                    Navigator.pushNamed(context, mapDownloadRoute);
+                    Navigator.pushNamedAndRemoveUntil(context, mapDownloadRoute , (route) => false);
                   
                   }
                   on UserNotFoundAuthException{
