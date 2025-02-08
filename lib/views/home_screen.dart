@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sabeel/constants/routes.dart';
+import 'package:sabeel/enums/menu_actions.dart';
+import 'package:sabeel/services/auth/auth_service.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:google_fonts/google_fonts.dart'; // Import GoogleFonts
@@ -12,21 +15,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
-  bool sos = false;
+  // bool _speechEnabled = false;
   String _lastWords = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _initSpeech();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _initSpeech();
+  // }
 
   /// This has to happen only once per app
-  void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-    setState(() {});
-  }
+  // void _initSpeech() async {
+  //   _speechEnabled = await _speechToText.initialize();
+  //   setState(() {});
+  // }
 
   /// Each time to start a speech recognition session
   void _startListening() async {
@@ -55,6 +57,37 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFFEEFEE9),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+        leading: AuthService.firebase().currentUser == null
+            ? IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(mapDownloadRoute , (route) => false);
+                },
+                // iconSize: 35,
+              )
+            : null,
+        actions: [ if(AuthService.firebase().currentUser != null) PopupMenuButton<MenuAction>(onSelected: (value) async {
+            switch (value) {
+              case MenuAction.logout:
+                final shouldUserLogOUt = await showLogoutDialog(context);
+                if (shouldUserLogOUt) {
+                  await AuthService.firebase().logOut();
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil(idVerificationRoute, (route) => false);
+                }
+                break;
+            }
+          }, itemBuilder: (context) {
+            return const [
+              PopupMenuItem<MenuAction>(
+                  value: MenuAction.logout, child: Text("Log Out"))
+            ];
+          })],
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -144,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            if(sos)
+            if(AuthService.firebase().currentUser != null)
         Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -183,4 +216,27 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+Future<bool> showLogoutDialog(BuildContext context) {
+  return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Log out'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text("Cansel")),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text("Log out")),
+          ],
+        );
+      }).then((value) => value ?? false);
 }

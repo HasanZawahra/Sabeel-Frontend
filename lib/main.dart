@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:sabeel/views/home_screen.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/views/id_verification_secreen.dart';
@@ -12,9 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: const Main(),
       routes: {
-        splashRoute : (context) => const SplashScreen(),
         idVerificationRoute : (context) => IdVerificationSecreen(),
         homeRoute: (context) => const HomeScreen(),
         mapDownloadRoute: (context) => const MapDownloadScreen(),
@@ -24,35 +25,45 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class Main extends StatefulWidget {
+  const Main({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  _MainState createState() => _MainState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _MainState extends State<Main> {
+
+
   @override
   void initState() {
     super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateToIdVerificationAutomatically(context);
+    // });
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Image.asset('assets/splashscreen-en.gif'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.pushNamed(context, idVerificationRoute);
-        },
-        child: const Icon(Icons.arrow_forward),
+        
       ),
     );
   }
+  }
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
+runApp(const MyApp());
 }
 
-void main() {
-  runApp(const MyApp());
+
+Future<void>_navigateToIdVerificationAutomatically(BuildContext context) async {
+   await Future.delayed(const Duration(seconds: 5), () {
+    Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute, (route) => false);
+  });
 }
