@@ -3,7 +3,7 @@ import 'package:sabeel/constants/maps_names.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/enums/menu_actions.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
-import 'package:sabeel/views/home_screen.dart';
+import 'package:sabeel/utils/logout_dialog.dart';
 
 class MapDownloadScreen extends StatefulWidget {
   const MapDownloadScreen({super.key});
