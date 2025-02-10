@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sabeel/services/auth/auth_service.dart';
 import 'firebase_options.dart';
-import 'package:sabeel/views/home_screen.dart';
+import 'package:sabeel/views/home_screen/home_screen_original.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/views/id_verification_secreen.dart';
 import 'package:sabeel/views/map_download_screen.dart';
@@ -34,21 +35,25 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
 
-
   @override
   void initState() {
     super.initState();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
-      _navigateToIdVerificationAutomatically(context);
+    //   _navigateToIdVerificationAutomatically(context);
     // });
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Image.asset('assets/splashscreen-en.gif'),
+        child: Image.asset('assets/gifs/splashscreen-en.gif'),
         
       ),
+      appBar:AppBar( leading:  IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute , (route) => false);
+                },))
     );
   }
   }
@@ -64,6 +69,9 @@ runApp(const MyApp());
 
 Future<void>_navigateToIdVerificationAutomatically(BuildContext context) async {
    await Future.delayed(const Duration(seconds: 5), () {
-    Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute, (route) => false);
+    if(AuthService.firebase().currentUser != null) {
+      Navigator.of(context).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+    }
+else  Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute, (route) => false);
   });
 }
