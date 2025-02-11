@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sabeel/constants/routes.dart';
-import 'package:sabeel/enums/menu_actions.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
-import 'package:sabeel/utils/logout_dialog.dart';
-// import 'package:speech_to_text/speech_recognition_result.dart';
-// import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:sabeel/utils/menu_action_dialog.dart';
 import 'package:sabeel/views/home_screen/voise_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,51 +17,53 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _showNewLayout = false; // Track the layout change
+  bool _speechEnabled = false; // Track the layout change
  
-  // SpeechToText _speechToText = SpeechToText();
-  // bool _speechEnabled = false;
-  // String _lastWords = '';
+  SpeechToText _speechToText = SpeechToText();
+  String _lastWords = '';
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _initSpeech();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _initSpeech();
+  }
 
-  /// This has to happen only once per app
-  // void _initSpeech() async {
-  //   _speechEnabled = await _speechToText.initialize();
-  //   setState(() {});
-  // }
+  // This has to happen only once per app
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    _speechEnabled = false;
+    setState(() {});
+  }
 
   /// Each time to start a speech recognition session
-  // void _startListening() async {
-  //   await _speechToText.listen(onResult: _onSpeechResult);
-  //   setState(() {});
-  // }
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
 
   /// Manually stop the active speech recognition session
   /// Note that there are also timeouts that each platform enforces
   /// and the SpeechToText plugin supports setting timeouts on the
   /// listen method.
-  // void _stopListening() async {
-  //   await _speechToText.stop();
-  //   setState(() {});
-  // }
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
 
   /// This is the callback that the SpeechToText plugin calls when
   /// the platform returns recognized words.
-  // void _onSpeechResult(SpeechRecognitionResult result) {
-  //   setState(() {
-  //     _lastWords = result.recognizedWords;
-  //     debugPrint('Recognized words: $_lastWords');
-  //   });
-  // }
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _lastWords = result.recognizedWords;
+      debugPrint('Recognized words: $_lastWords');
+    });
+  }
 
   void _toggleLayout() {
-    setState(() {
-      _showNewLayout = !_showNewLayout;
+    setState(()  {
+      _speechEnabled = !_speechEnabled;
+      if(_speechEnabled)  _startListening();
+      else _stopListening();
     });
   }
 
@@ -85,27 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
         
         actions: [
           if (AuthService.firebase().currentUser != null)
-        PopupMenuButton<MenuAction>(
-          icon: Icon(Icons.menu, size: 35,), // Change the icon to a burger menu
-          onSelected: (value) async {
-            switch (value) {
-          case MenuAction.logout:
-            final shouldUserLogOUt = await showLogoutDialog(context);
-            if (shouldUserLogOUt) {
-              await AuthService.firebase().logOut();
-              Navigator.of(context).pushNamedAndRemoveUntil(
-              idVerificationRoute, (route) => false);
-            }
-            break;
-            }
-          },
-          itemBuilder: (context) {
-            return const [
-          PopupMenuItem<MenuAction>(
-              value: MenuAction.logout, child: Text("Log Out"))
-            ];
-          },
-        )
+          menuActionDialog(context),
         ],
       ),
       body: AnimatedSwitcher(
@@ -127,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
             
         AnimatedSwitcher(
           duration: Duration(milliseconds: 500),
-          child: _showNewLayout
+          child: _speechEnabled
               ? Container(
             key: ValueKey(1),
             margin: EdgeInsets.all(20), // Add top margin
@@ -157,8 +138,8 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildTitle("New Waypoint"),
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
-              top: _showNewLayout ? 40 : MediaQuery.of(context).size.height / 4,
-              left: _showNewLayout ? 40 : MediaQuery.of(context).size.width / 6.5,
+              top: _speechEnabled ? 40 : MediaQuery.of(context).size.height / 4,
+              left: _speechEnabled ? 40 : MediaQuery.of(context).size.width / 6.5,
               child: GestureDetector(
                 onTap: _toggleLayout,
                 child: _buildMicButton(),
@@ -168,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
               AnimatedPositioned(
                 curve: Curves.easeInOut,
                 duration: const Duration(milliseconds: 300),
-                bottom: _showNewLayout ? -200 : 0,
+                bottom: _speechEnabled ? -200 : 0,
                 left: MediaQuery.of(context).size.width / 20,
                 child: Container(
                   margin: EdgeInsets.only(bottom: 20), // Add bottom margin
@@ -212,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: () async {
           _toggleLayout();
           final player = AudioPlayer();
-          _showNewLayout
+          _speechEnabled
               ? await player
                   .play(AssetSource('sounds/microphone/active_microphone.mp3'))
               : await player.play(
@@ -220,15 +201,15 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: _showNewLayout ? 110 : 300,
-          height: _showNewLayout ? 110 : 300,
+          width: _speechEnabled ? 110 : 300,
+          height: _speechEnabled ? 110 : 300,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xFF85AB59),
             boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
           ),
-          child: Icon(_showNewLayout ? Icons.mic : Icons.mic_off,
-              size: _showNewLayout ? 80 : 150, color: Colors.black87),
+          child: Icon(_speechEnabled ? Icons.mic : Icons.mic_off,
+              size: _speechEnabled ? 80 : 150, color: Colors.black87),
         ),
       ),
     );
@@ -238,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      top: _showNewLayout ? -200 : 22.0,
+      top: _speechEnabled ? -200 : 22.0,
       left: 20,
       child: Align(
         child: Container(
