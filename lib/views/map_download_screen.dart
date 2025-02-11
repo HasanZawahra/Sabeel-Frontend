@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sabeel/constants/maps_names.dart';
 import 'package:sabeel/constants/routes.dart';
-import 'package:sabeel/enums/menu_actions.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
-import 'package:sabeel/utils/logout_dialog.dart';
+import 'package:sabeel/utils/menu_action_dialog.dart';
 
 class MapDownloadScreen extends StatefulWidget {
   const MapDownloadScreen({super.key});
@@ -71,25 +70,7 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
             : null,
         actions: [
           if (AuthService.firebase().currentUser != null)
-            PopupMenuButton<MenuAction>(
-                onSelected: (value) async {
-                  switch (value) {
-                    case MenuAction.logout:
-                      final shouldUserLogOUt = await showLogoutDialog(context);
-                      if (shouldUserLogOUt) {
-                        await AuthService.firebase().logOut();
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            idVerificationRoute, (route) => false);
-                      }
-                      break;
-                  }
-                },
-                itemBuilder: (context) {
-                  return const [
-                    PopupMenuItem<MenuAction>(
-                        value: MenuAction.logout, child: Text("Log Out"))
-                  ];
-                })
+            menuActionDialog(context)
         ],
       ),
       

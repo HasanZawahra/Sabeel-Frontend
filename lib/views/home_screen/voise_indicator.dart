@@ -15,7 +15,7 @@ class _VoiceActivityIndicatorState extends State<VoiceActivityIndicator>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 300),
     )..repeat(reverse: true);
   }
 
@@ -28,17 +28,18 @@ class _VoiceActivityIndicatorState extends State<VoiceActivityIndicator>
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: MediaQuery.of(context).size.height/20,
-      right: MediaQuery.of(context).size.width/20,
+      top: MediaQuery.of(context).size.height/18,
+      right: MediaQuery.of(context).size.width/10,
       child: Container(
-        width: 80,
-        height: 40,
+        
+        width: 110,
+        height: 30,
         
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(5, (index) {
+          children: List.generate(8, (index) {
             return AnimatedContainer(
-              duration: Duration(milliseconds: 300),
+              duration: Duration(milliseconds: 200),
               height:  7.0 + _controller.value * 10,
               width: 7,
               decoration: BoxDecoration(
