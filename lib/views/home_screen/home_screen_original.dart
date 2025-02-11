@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // This has to happen only once per app
   void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
+    _speechEnabled? _startListening() : null;
     setState(() {});
   }
 
