@@ -34,12 +34,12 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-
+  
   @override
   void initState() {
     super.initState();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _navigateToIdVerificationAutomatically(context);
+    //   navigateToIdVerificationAutomatically(context);
     // });
   }
 
@@ -67,7 +67,7 @@ runApp(const MyApp());
 }
 
 
-Future<void>_navigateToIdVerificationAutomatically(BuildContext context) async {
+Future<void> navigateToIdVerificationAutomatically(BuildContext context) async {
    await Future.delayed(const Duration(seconds: 5), () {
     if(AuthService.firebase().currentUser != null) {
       Navigator.of(context).pushNamedAndRemoveUntil(homeRoute, (route) => false);
