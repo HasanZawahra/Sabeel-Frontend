@@ -19,5 +19,6 @@ BoxDecoration buildSlider() {
   return BoxDecoration(
     color: const Color.fromARGB(131, 255, 255, 255).withOpacity(0.5),
     borderRadius: BorderRadius.circular(20),
+    
   );
 }

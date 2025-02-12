@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
+import 'package:sabeel/utils/circular_button.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,6 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _initSpeech();
   }
 
+  @override
+  void dispose() {
+    _speechToText.cancel();
+    super.dispose();
+  }
   // This has to happen only once per app
   void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
@@ -55,16 +61,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
       _lastWords = result.recognizedWords;
-      debugPrint('Recognized words: $_lastWords');
     });
   }
 
   void _toggleLayout() {
-    setState(()  {
+    setState(() {
       _speechEnabled = !_speechEnabled;
-      if(_speechEnabled)  _startListening();
-      else _stopListening();
-    });
+      if(_speechEnabled) _startListening();
+      else {_stopListening();
+      _lastWords = '';
+      
+    }});
   }
 
   @override
@@ -108,38 +115,73 @@ class _HomeScreenState extends State<HomeScreen> {
             
         AnimatedSwitcher(
           duration: Duration(milliseconds: 500),
-          child: _speechEnabled
+          child: 
+          _speechEnabled
               ? Container(
             key: ValueKey(1),
             margin: EdgeInsets.all(20), // Add top margin
             decoration: buildSlider(),
             child: Stack(
               children: [
-                VoiceActivityIndicator(),
+              VoiceActivityIndicator(),
                 Positioned(
+                top: MediaQuery.of(context).size.height / 5,
+                  child: Container(
+                    margin: EdgeInsets.all(20), // Add top margin
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        
+                        children:[ 
+                           FittedBox(
+                            fit: BoxFit.contain,
+                            child: Container(
+                                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/1.3),
+                                child: Text(
+                                  _lastWords,
+                                  style: TextStyle(
+                                  fontSize: 24,
+                                  color: const Color.fromARGB(255, 13, 13, 13),
+                                  fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ]
+                      ),
+                    ),
+                  ),
+           
+              Positioned(
             bottom: MediaQuery.of(context).size.height / 35,
             right: MediaQuery.of(context).size.width / 20,
-            child: _buildCircularButton(Icons.refresh, const Color(0xFF85AB59), () {}),
+            child: buildCircularButton(Icons.check, const Color(0xFF85AB59), () {}, 100),
                 ),
                 Positioned(
             bottom: MediaQuery.of(context).size.height / 35,
             left: MediaQuery.of(context).size.width / 20,
-            child: _buildCircularButton(Icons.arrow_back, const Color.fromARGB(255, 180, 42, 42), () {}),
+            child: buildCircularButton(Icons.refresh, const Color.fromARGB(255, 180, 42, 42),
+             () {
+                // Future.delayed(Duration(milliseconds: 150), () {
+                _toggleLayout();
+                // });
+                Future.delayed(Duration(milliseconds: 200), () {
+                _toggleLayout();
+                });
+             }
+             , 100),
                 ),
-   
-      // )
               ],
             ),
           )
               : Container(key: ValueKey(2)),
         )
                 ,
-                _buildTitle("New Waypoint"),
-            _buildTitle("New Waypoint"),
+            
+            _buildTitle("New\nWaypoint"),
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
-              top: _speechEnabled ? 40 : MediaQuery.of(context).size.height / 4,
-              left: _speechEnabled ? 40 : MediaQuery.of(context).size.width / 6.5,
+              top: _speechEnabled ? MediaQuery.of(context).size.height/20 : MediaQuery.of(context).size.height / 3.5,
+              left: _speechEnabled ? MediaQuery.of(context).size.width/10 : MediaQuery.of(context).size.width / 6.5,
               child: GestureDetector(
                 onTap: _toggleLayout,
                 child: _buildMicButton(),
@@ -201,15 +243,15 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: _speechEnabled ? 110 : 300,
-          height: _speechEnabled ? 110 : 300,
+          width: _speechEnabled ? (MediaQuery.of(context).size.width/1.4)/2.73 : MediaQuery.of(context).size.width/1.4,
+          height: _speechEnabled ? (MediaQuery.of(context).size.height/3.2)/2.73 : MediaQuery.of(context).size.height/3.2,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xFF85AB59),
             boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
           ),
           child: Icon(_speechEnabled ? Icons.mic : Icons.mic_off,
-              size: _speechEnabled ? 80 : 150, color: Colors.black87),
+              size: _speechEnabled ? 80 : MediaQuery.of(context).size.width/2.9, color: Colors.black87),
         ),
       ),
     );
@@ -219,16 +261,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      top: _speechEnabled ? -200 : 22.0,
-      left: 20,
+      top: _speechEnabled ? -200 : MediaQuery.of(context).size.height / 20,
+      left: MediaQuery.of(context).size.width / 20,
       child: Align(
         child: Container(
           child: FittedBox(
             fit: BoxFit.fitWidth,
             child: Text(
-              'New\nWaypoint',
+              title,
               style: GoogleFonts.roboto(
-                fontSize: 90,
+                fontSize: MediaQuery.of(context).size.width / 4.7,
                 fontWeight: FontWeight.bold,
                 height: 0.8,
               ),
@@ -238,37 +280,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  // Padding(
-  //           // Added padding for better alignment
-  //   padding: const EdgeInsets.all(22.0),
-  //   child: Align(
-  //     alignment: Alignment.topLeft, // Align to top-left
-  //     child: Container(
-  //       margin: EdgeInsets.only(top: 20), // Add top margin
-  //       child: Text(
-  //         'New Waypoint',
-  //         style: GoogleFonts.roboto(
-  //           // Use Roboto font
-  //           fontSize: 90,
-  //           fontWeight: FontWeight.bold,
-  //           height: 0.8, // Reduce line height
-  //         ),
-  //       ),
-  //     ),
-  //   ),
-  // );
 }
-
- Widget _buildCircularButton(IconData icon, Color color, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
-        ),
-        child: Icon(icon, size: 100, color: const Color.fromARGB(255, 0, 0, 0)),
-      ),
-    );
-  }
