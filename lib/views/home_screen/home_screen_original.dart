@@ -61,16 +61,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
       _lastWords = result.recognizedWords;
-      debugPrint('Recognized words: $_lastWords');
     });
   }
 
   void _toggleLayout() {
-    setState(()  {
+    setState(() {
       _speechEnabled = !_speechEnabled;
-      if(_speechEnabled)  _startListening();
-      else _stopListening();
-    });
+      if(_speechEnabled) _startListening();
+      else {_stopListening();
+      _lastWords = '';
+      
+    }});
   }
 
   @override
@@ -145,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             ),
-                          
                         ]
                       ),
                     ),
@@ -159,7 +159,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 Positioned(
             bottom: MediaQuery.of(context).size.height / 35,
             left: MediaQuery.of(context).size.width / 20,
-            child: buildCircularButton(Icons.refresh, const Color.fromARGB(255, 180, 42, 42), () {}, 100),
+            child: buildCircularButton(Icons.refresh, const Color.fromARGB(255, 180, 42, 42),
+             () {
+                // Future.delayed(Duration(milliseconds: 150), () {
+                _toggleLayout();
+                // });
+                Future.delayed(Duration(milliseconds: 200), () {
+                _toggleLayout();
+                });
+             }
+             , 100),
                 ),
               ],
             ),
@@ -271,23 +280,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  // Padding(
-  //           // Added padding for better alignment
-  //   padding: const EdgeInsets.all(22.0),
-  //   child: Align(
-  //     alignment: Alignment.topLeft, // Align to top-left
-  //     child: Container(
-  //       margin: EdgeInsets.only(top: 20), // Add top margin
-  //       child: Text(
-  //         'New Waypoint',
-  //         style: GoogleFonts.roboto(
-  //           // Use Roboto font
-  //           fontSize: 90,
-  //           fontWeight: FontWeight.bold,
-  //           height: 0.8, // Reduce line height
-  //         ),
-  //       ),
-  //     ),
-  //   ),
-  // );
 }
