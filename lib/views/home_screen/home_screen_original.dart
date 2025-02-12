@@ -123,24 +123,33 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Stack(
               children: [
               VoiceActivityIndicator(),
-             
                 Positioned(
                 top: MediaQuery.of(context).size.height / 5,
-            
                   child: Container(
-                  margin: EdgeInsets.all(30), 
-                    child: SingleChildScrollView(
-                    child: Text(
-                      _lastWords,
-                      style: TextStyle(
-                      fontSize: 24,
-                      color: const Color.fromARGB(255, 13, 13, 13),
-                      fontWeight: FontWeight.bold,
+                    margin: EdgeInsets.all(20), // Add top margin
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        
+                        children:[ 
+                           FittedBox(
+                            fit: BoxFit.contain,
+                            child: Container(
+                                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/1.3),
+                                child: Text(
+                                  _lastWords,
+                                  style: TextStyle(
+                                  fontSize: 24,
+                                  color: const Color.fromARGB(255, 13, 13, 13),
+                                  fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          
+                        ]
                       ),
                     ),
-                    ),
                   ),
-                ),
            
               Positioned(
             bottom: MediaQuery.of(context).size.height / 35,
@@ -152,8 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
             left: MediaQuery.of(context).size.width / 20,
             child: buildCircularButton(Icons.refresh, const Color.fromARGB(255, 180, 42, 42), () {}, 100),
                 ),
-   
-      // )
               ],
             ),
           )
