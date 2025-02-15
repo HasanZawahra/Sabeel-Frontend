@@ -36,12 +36,17 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> {
   
   @override
-  void initState() {
-    super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   navigateToIdVerificationAutomatically(context);
-    // });
-  }
+void initState() {
+  super.initState();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        navigateToIdVerificationAutomatically(context);
+      }
+    });
+  });
+}
+
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,29 +54,26 @@ class _MainState extends State<Main> {
         child: Image.asset('assets/gifs/splashscreen-en.gif'),
         
       ),
-      appBar:AppBar( leading:  IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute , (route) => false);
-                },))
+      // appBar:AppBar( leading:  IconButton(
+      //           icon: Icon(Icons.arrow_back),
+      //           onPressed: () {
+      //             Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute , (route) => false);
+      //           },))
     );
   }
   }
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
-);
-runApp(const MyApp());
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  runApp(const MyApp());
 }
 
 
 Future<void> navigateToIdVerificationAutomatically(BuildContext context) async {
-   await Future.delayed(const Duration(seconds: 5), () {
     if(AuthService.firebase().currentUser != null) {
-      Navigator.of(context).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+      await Navigator.of(context).pushNamedAndRemoveUntil(homeRoute, (route) => false);
     }
-else  Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute, (route) => false);
-  });
+else await Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute, (route) => false);
 }

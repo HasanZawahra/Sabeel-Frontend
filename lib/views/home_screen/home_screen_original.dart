@@ -18,8 +18,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _speechEnabled = false; // Track the layout change
- 
+  bool _speechEnabled = false;
+  final player = AudioPlayer();
+
+
   SpeechToText _speechToText = SpeechToText();
   String _lastWords = '';
 
@@ -160,10 +162,11 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: MediaQuery.of(context).size.height / 35,
             left: MediaQuery.of(context).size.width / 20,
             child: buildCircularButton(Icons.refresh, const Color.fromARGB(255, 180, 42, 42),
-             () {
+             () async {
                 // Future.delayed(Duration(milliseconds: 150), () {
                 _toggleLayout();
                 // });
+                await player.play(AssetSource('sounds/microphone/refresh.mp3'));
                 Future.delayed(Duration(milliseconds: 200), () {
                 _toggleLayout();
                 });
@@ -234,12 +237,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: GestureDetector(
         onTap: () async {
           _toggleLayout();
-          final player = AudioPlayer();
           _speechEnabled
               ? await player
-                  .play(AssetSource('sounds/microphone/active_microphone.mp3'))
+                  .play(AssetSource('sounds/microphone/active_mic2.mp3'))
               : await player.play(
-                  AssetSource('sounds/microphone/inactive_microphone.mp3'));
+                  AssetSource('sounds/microphone/active_microphone.mp3'));
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
