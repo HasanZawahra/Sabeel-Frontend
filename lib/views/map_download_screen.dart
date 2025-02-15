@@ -44,7 +44,7 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
             ),
             Image.network(
-              'assets/maps_logos/${maps_names[i]}.png',
+              'assets/maps_logos/${maps_names[i].split(' ').join('_')}.png',
               height: 55,
             ),
           ],
