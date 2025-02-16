@@ -34,18 +34,16 @@ class _IdVerificationSecreenState extends State<IdVerificationSecreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Padding(
+
+      body: Container(
+        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "Enter Your Credentials",
-              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 70),
             Container(

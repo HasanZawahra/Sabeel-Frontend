@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
+import 'package:sabeel/views/camera_screen.dart';
 import 'firebase_options.dart';
 import 'package:sabeel/views/home_screen/home_screen_original.dart';
 import 'package:sabeel/constants/routes.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         homeRoute: (context) => const HomeScreen(),
         mapDownloadRoute: (context) => const MapDownloadScreen(),
         mapDownloadProgressRoute: (context) => const MapDownloadingProgress(),
+        cameraScreenRoute: (context) => const CameraScreen(),
       },
     );
   }
@@ -38,13 +40,13 @@ class _MainState extends State<Main> {
   @override
 void initState() {
   super.initState();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    Future.delayed(const Duration(seconds: 5), () {
-      if (mounted) {
-        navigateToIdVerificationAutomatically(context);
-      }
-    });
-  });
+  // WidgetsBinding.instance.addPostFrameCallback((_) {
+  //   Future.delayed(const Duration(seconds: 5), () {
+  //     if (mounted) {
+  //       navigateToIdVerificationAutomatically(context);
+  //     }
+  //   });
+  // });
 }
 
 
@@ -54,11 +56,11 @@ void initState() {
         child: Image.asset('assets/gifs/splashscreen-en.gif'),
         
       ),
-      // appBar:AppBar( leading:  IconButton(
-      //           icon: Icon(Icons.arrow_back),
-      //           onPressed: () {
-      //             Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute , (route) => false);
-      //           },))
+      appBar:AppBar( leading:  IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute , (route) => false);
+                },))
     );
   }
   }
