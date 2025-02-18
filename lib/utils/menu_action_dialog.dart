@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/enums/menu_actions.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
@@ -13,8 +14,7 @@ PopupMenuButton<MenuAction> menuActionDialog(BuildContext context) {
             final shouldUserLogOUt = await showLogoutDialog(context);
             if (shouldUserLogOUt) {
               await AuthService.firebase().logOut();
-              Navigator.of(context).pushNamedAndRemoveUntil(
-              idVerificationRoute, (route) => false);
+             context.go(idVerificationRoute);
             }
             break;
             }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
@@ -88,7 +89,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   if(currUser) buildCircularButton(Icons.sos_rounded,  Color(0xFFB42A2A), () {},150),
                   if(currUser) SizedBox(width: 32),
                   buildCircularButton(Icons.mic,  const Color(0xFF85AB59),  () async {
-                    Navigator.of(context).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+                    context.go(homeRoute);
                   }, 150),
                 ],
               ),

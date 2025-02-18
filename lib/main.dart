@@ -1,29 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:sabeel/services/auth/auth_service.dart';
-import 'package:sabeel/views/camera_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sabeel/services/navigation/routing_service.dart';
 import 'firebase_options.dart';
-import 'package:sabeel/views/home_screen/home_screen_original.dart';
 import 'package:sabeel/constants/routes.dart';
-import 'package:sabeel/views/id_verification_secreen.dart';
-import 'package:sabeel/views/map_download_screen.dart';
-import 'package:sabeel/views/map_downloading_progress_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      home: const Main(),
-      routes: {
-        idVerificationRoute : (context) => IdVerificationSecreen(),
-        homeRoute: (context) => const HomeScreen(),
-        mapDownloadRoute: (context) => const MapDownloadScreen(),
-        mapDownloadProgressRoute: (context) => const MapDownloadingProgress(),
-        cameraScreenRoute: (context) => const CameraScreen(),
-      },
+      routerConfig: AppRouter.router,
     );
   }
 }
@@ -36,31 +25,15 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  
-  @override
-void initState() {
-  super.initState();
-  // WidgetsBinding.instance.addPostFrameCallback((_) {
-  //   Future.delayed(const Duration(seconds: 5), () {
-  //     if (mounted) {
-  //       navigateToIdVerificationAutomatically(context);
-  //     }
-  //   });
-  // });
-}
-
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Image.asset('assets/gifs/splashscreen-en.gif'),
-        
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.go(splashScreenRoute);
+    });
+    return const MaterialApp(
+      home: Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       ),
-      appBar:AppBar( leading:  IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute , (route) => false);
-                },))
     );
   }
   }
@@ -70,12 +43,4 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   
   runApp(const MyApp());
-}
-
-
-Future<void> navigateToIdVerificationAutomatically(BuildContext context) async {
-    if(AuthService.firebase().currentUser != null) {
-      await Navigator.of(context).pushNamedAndRemoveUntil(homeRoute, (route) => false);
-    }
-else await Navigator.of(context).pushNamedAndRemoveUntil(idVerificationRoute, (route) => false);
 }
