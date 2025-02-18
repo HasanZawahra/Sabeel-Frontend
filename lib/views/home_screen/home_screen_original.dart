@@ -156,7 +156,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned(
             bottom: MediaQuery.of(context).size.height / 35,
             right: MediaQuery.of(context).size.width / 20,
-            child: buildCircularButton(Icons.check, const Color(0xFF85AB59), () {}, 100),
+            child: buildCircularButton(Icons.check, const Color(0xFF85AB59), () {
+              player.play(AssetSource('sounds/microphone/confirm.mp3'));
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  cameraScreenRoute, (route) => false);
+            }, 100),
                 ),
                 Positioned(
             bottom: MediaQuery.of(context).size.height / 35,
@@ -166,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Future.delayed(Duration(milliseconds: 150), () {
                 _toggleLayout();
                 // });
-                await player.play(AssetSource('sounds/microphone/refresh.mp3'));
+                await player.play(AssetSource('sounds/microphone/active_mic.mp3'));
                 Future.delayed(Duration(milliseconds: 200), () {
                 _toggleLayout();
                 });
@@ -239,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _toggleLayout();
           _speechEnabled
               ? await player
-                  .play(AssetSource('sounds/microphone/active_mic2.mp3'))
+                  .play(AssetSource('sounds/microphone/active_mic.mp3'))
               : await player.play(
                   AssetSource('sounds/microphone/active_microphone.mp3'));
         },
@@ -265,20 +269,16 @@ class _HomeScreenState extends State<HomeScreen> {
       curve: Curves.easeInOut,
       top: _speechEnabled ? -200 : MediaQuery.of(context).size.height / 20,
       left: MediaQuery.of(context).size.width / 20,
-      child: Align(
-        child: Container(
-          child: FittedBox(
-            fit: BoxFit.fitWidth,
-            child: Text(
+      child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children:[ Text(
               title,
               style: GoogleFonts.roboto(
                 fontSize: MediaQuery.of(context).size.width / 4.7,
                 fontWeight: FontWeight.bold,
                 height: 0.8,
               ),
-            ),
-          ),
-        ),
+        ),]
       ),
     );
   }
