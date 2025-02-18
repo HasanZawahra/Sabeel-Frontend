@@ -157,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: MediaQuery.of(context).size.height / 35,
             right: MediaQuery.of(context).size.width / 20,
             child: buildCircularButton(Icons.check, const Color(0xFF85AB59), () {
+              player.play(AssetSource('sounds/microphone/confirm.mp3'));
               Navigator.of(context).pushNamedAndRemoveUntil(
                   cameraScreenRoute, (route) => false);
             }, 100),
@@ -169,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Future.delayed(Duration(milliseconds: 150), () {
                 _toggleLayout();
                 // });
-                await player.play(AssetSource('sounds/microphone/active_mic2.mp3'));
+                await player.play(AssetSource('sounds/microphone/active_mic.mp3'));
                 Future.delayed(Duration(milliseconds: 200), () {
                 _toggleLayout();
                 });
@@ -242,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _toggleLayout();
           _speechEnabled
               ? await player
-                  .play(AssetSource('sounds/microphone/active_mic2.mp3'))
+                  .play(AssetSource('sounds/microphone/active_mic.mp3'))
               : await player.play(
                   AssetSource('sounds/microphone/active_microphone.mp3'));
         },
