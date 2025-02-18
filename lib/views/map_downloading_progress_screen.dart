@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/routes.dart';
 
 class MapDownloadingProgress extends StatefulWidget {
@@ -23,7 +24,7 @@ void _startProgress() {
         });
         if (progress >= 1.0) {
           _isProgressActive = false;
-          Navigator.pushNamedAndRemoveUntil(context, homeRoute , (route) => false);
+          context.go(homeRoute);
         } else {
           _startProgress();
         }

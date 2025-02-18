@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 Future<bool> showLogoutDialog(BuildContext context) {
   return showDialog<bool>(
@@ -11,12 +12,12 @@ Future<bool> showLogoutDialog(BuildContext context) {
           actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(false);
+                  context.pop(false);
                 },
                 child: Text("Cansel")),
             TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(true);
+                  context.pop(true);
                 },
                 child: Text("Log out")),
           ],

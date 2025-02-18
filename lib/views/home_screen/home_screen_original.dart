@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
@@ -87,8 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ? IconButton(
             icon: Icon(Icons.arrow_back, size: 35),
             onPressed: () {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              mapDownloadRoute, (route) => false);
+          context.go(mapDownloadRoute);
             },
           )
         : null,
@@ -158,8 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
             right: MediaQuery.of(context).size.width / 20,
             child: buildCircularButton(Icons.check, const Color(0xFF85AB59), () {
               player.play(AssetSource('sounds/microphone/confirm.mp3'));
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  cameraScreenRoute, (route) => false);
+              context.go(cameraScreenRoute);
             }, 100),
                 ),
                 Positioned(

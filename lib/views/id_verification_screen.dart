@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_exceptions.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
 import 'package:sabeel/utils/error_dialog.dart';
 
-class IdVerificationSecreen extends StatefulWidget {
+class IdVerificationScreen extends StatefulWidget {
   @override
-  _IdVerificationSecreenState createState() => _IdVerificationSecreenState();
+  _IdVerificationScreenState createState() => _IdVerificationScreenState();
 }
 
-class _IdVerificationSecreenState extends State<IdVerificationSecreen> {
+class _IdVerificationScreenState extends State<IdVerificationScreen> {
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -85,7 +86,7 @@ class _IdVerificationSecreenState extends State<IdVerificationSecreen> {
                         final password = _password.text;
                         try {
                           await AuthService.firebase().logIn(email: email, password: password);
-                          Navigator.pushNamedAndRemoveUntil(context, mapDownloadRoute, (route) => false);
+                          context.go(homeRoute);
                         } on UserNotFoundAuthException {
                           showErrorDialog(context, "User not found");
                         } on WrongPasswordAuthException {
@@ -118,7 +119,7 @@ class _IdVerificationSecreenState extends State<IdVerificationSecreen> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, mapDownloadRoute);
+                        context.push(mapDownloadRoute);
                       },
                       child: Text("Sign In As a Guest", style: TextStyle(color: Colors.white)),
                     ),
