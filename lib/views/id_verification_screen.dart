@@ -86,7 +86,7 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
                         final password = _password.text;
                         try {
                           await AuthService.firebase().logIn(email: email, password: password);
-                          context.go(homeRoute);
+                          context.go(mapDownloadRoute);
                         } on UserNotFoundAuthException {
                           showErrorDialog(context, "User not found");
                         } on WrongPasswordAuthException {

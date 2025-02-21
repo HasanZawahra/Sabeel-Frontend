@@ -57,7 +57,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.volume_up),
+      
                       Text(
                         "Destination Progress",
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

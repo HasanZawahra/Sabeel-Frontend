@@ -57,5 +57,11 @@
 	<string>This app will use your location to show features near you.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Need photo library access for saving and uploading images</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>whatsapp</string>
+        <string>whatsapp-camera</string>
+    </array>
+
 </dict>
 </plist>

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
+import 'package:sabeel/services/sos/open_caht.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
 import 'package:sabeel/utils/circular_button.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -9,11 +10,10 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:sabeel/utils/menu_action_dialog.dart';
-import 'package:sabeel/views/home_screen/voise_indicator.dart';
+import 'package:sabeel/utils/voise_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -21,8 +21,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _speechEnabled = false;
   final player = AudioPlayer();
-
-
   SpeechToText _speechToText = SpeechToText();
   String _lastWords = '';
 
@@ -67,11 +65,12 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _toggleLayout() {
+  void _toggleLayout() async {
     setState(() {
       _speechEnabled = !_speechEnabled;
       if(_speechEnabled) _startListening();
-      else {_stopListening();
+      else {
+      _stopListening();
       _lastWords = '';
       
     }});
@@ -139,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                                 constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/1.3),
                                 child: Text(
-                                  _lastWords,
+                                    _speechToText.isListening ?'You said: $_lastWords' : 'Listening...',
                                   style: TextStyle(
                                   fontSize: 24,
                                   color: const Color.fromARGB(255, 13, 13, 13),
@@ -159,22 +158,20 @@ class _HomeScreenState extends State<HomeScreen> {
             child: buildCircularButton(Icons.check, const Color(0xFF85AB59), () {
               player.play(AssetSource('sounds/microphone/confirm.mp3'));
               context.go(cameraScreenRoute);
-            }, 100),
+            }, 130),
                 ),
                 Positioned(
             bottom: MediaQuery.of(context).size.height / 35,
             left: MediaQuery.of(context).size.width / 20,
             child: buildCircularButton(Icons.refresh, const Color.fromARGB(255, 180, 42, 42),
              () async {
-                // Future.delayed(Duration(milliseconds: 150), () {
-                _toggleLayout();
-                // });
-                await player.play(AssetSource('sounds/microphone/active_mic.mp3'));
-                Future.delayed(Duration(milliseconds: 200), () {
-                _toggleLayout();
+                await player.play(AssetSource('sounds/microphone/refresh.mp3'));
+              
+                setState(() {
+                  _lastWords = '';
                 });
              }
-             , 100),
+             , 130),
                 ),
               ],
             ),
@@ -197,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
               AnimatedPositioned(
                 curve: Curves.easeInOut,
                 duration: const Duration(milliseconds: 300),
-                bottom: _speechEnabled ? -200 : 0,
+                bottom: _speechEnabled ? -200 : 10,
                 left: MediaQuery.of(context).size.width / 20,
                 child: Container(
                   margin: EdgeInsets.only(bottom: 20), // Add bottom margin
@@ -205,9 +202,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       0.9, // 75% of screen width
                   height: MediaQuery.of(context).size.height * 0.15,
                   child: ElevatedButton(
-                    onPressed: () {
-                      //Handle SOS button press here
-                      debugPrint("SOS pressed!");
+                    onPressed: () async  {
+ 
+                      Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => VideoRecorderScreen(),
+    ),
+  );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFB42A2A),
