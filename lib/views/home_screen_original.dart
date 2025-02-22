@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
-import 'package:sabeel/services/sos/open_caht.dart';
+import 'package:sabeel/services/sos/constants.dart';
+import 'package:sabeel/services/sos/whatsapp_functions.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
 import 'package:sabeel/utils/circular_button.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -203,13 +206,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: MediaQuery.of(context).size.height * 0.15,
                   child: ElevatedButton(
                     onPressed: () async  {
- 
-                      Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => VideoRecorderScreen(),
-    ),
-  );
+                      if(Platform.isIOS){
+                        openWhatsAppChat(phoneNumber, messageContent);
+                      }
+                      else context.push(videoRecorderRoute);
+                  
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFB42A2A),

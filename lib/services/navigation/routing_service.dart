@@ -1,11 +1,11 @@
 import 'package:go_router/go_router.dart';
-import 'package:sabeel/main.dart';
 import 'package:sabeel/views/camera_screen%20copy.dart';
 import 'package:sabeel/views/home_screen_original.dart';
 import 'package:sabeel/views/id_verification_screen.dart';
 import 'package:sabeel/views/map_download_screen.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/views/map_downloading_progress_screen.dart';
+import 'package:sabeel/views/sos_video_revording.dart';
 import 'package:sabeel/views/splash_screen.dart';
 
 class AppRouter {
@@ -38,8 +38,8 @@ class AppRouter {
         builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
-        path: '/sos',
-        builder: (context, state) => const MyApp(),
+        path: videoRecorderRoute,
+        builder: (context, state) => const VideoRecorderScreen(),
 
       )
     ],

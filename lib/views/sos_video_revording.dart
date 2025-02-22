@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:share_plus/share_plus.dart' as share_plus;
-import 'dart:io';
-import 'package:share/share.dart' as share;
-import 'package:url_launcher/url_launcher.dart';
-import 'package:whatsapp_share2/whatsapp_share2.dart';
-import 'dart:io';
-
+import 'package:sabeel/services/sos/constants.dart';
+import 'package:sabeel/services/sos/whatsapp_functions.dart';
 
 class VideoRecorderScreen extends StatefulWidget {
   
@@ -15,6 +10,7 @@ class VideoRecorderScreen extends StatefulWidget {
   @override
   _VideoRecorderScreenState createState() => _VideoRecorderScreenState();
 }
+
 
 class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   CameraController? _controller;
@@ -63,61 +59,24 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
 
     try {
       final XFile file = await _controller!.stopVideoRecording();
-      print('Video recorded to: ${file.path}');
       setState(() {
         _isRecording = false;
         _videoPath = file.path;
       });
       // _sendToWhatsApp('+970595464739');
-      _shareVideo('+970595464739');
+      if (_videoPath == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("No video recorded!")),
+        );
+        
+      }
+      else shareVideo(phoneNumber, _videoPath!, context, messageContent);
+
     } catch (e) {
       print("Error stopping video recording: $e");
     }
   }
 
-Future<void> _shareVideo(String phoneNumber) async {
-  if (_videoPath == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("No video recorded!")),
-    );
-    return;
-  }
-
-  try {
-    final file = File(_videoPath!);
-    
-    if (await file.exists()) {
-      if (Platform.isIOS) {
-        // On iOS, show the Share Sheet so the user can pick WhatsApp manually
-        await share_plus.Share.shareXFiles(
-          [XFile(_videoPath!)],
-          text: "I think I lost my way in the campus, please check this video to identify my location.",
-        );
-      } else {
-        // On Android, open WhatsApp chat and then send the file
-        final Uri uri = Uri.parse("whatsapp://send?phone=$phoneNumber&text=I think I lost my way in the campus, please check this video to identify my location.");
-
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-          await Future.delayed(Duration(seconds: 2)); // Wait for chat to open
-
-          await WhatsappShare.shareFile(
-            phone: phoneNumber,
-            filePath: [_videoPath!],
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("WhatsApp is not installed!")),
-          );
-        }
-      }
-    } else {
-      print("Video file not found!");
-    }
-  } catch (e) {
-    print("Error sharing video: $e");
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -151,4 +110,5 @@ Future<void> _shareVideo(String phoneNumber) async {
       ),
     );
   }
+
 }

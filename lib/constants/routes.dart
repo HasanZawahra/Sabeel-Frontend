@@ -1,7 +1,7 @@
-
 const idVerificationRoute = '/idVerification';
 const homeRoute = '/home';
 const mapDownloadRoute = '/map_download';
 const mapDownloadProgressRoute = '/map_download/progress';
 const cameraScreenRoute = '/camera_screen';
 const splashScreenRoute = '/splash_screen';
+const videoRecorderRoute = '/video_recorder';
