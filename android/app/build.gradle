@@ -1,35 +1,30 @@
-plugins {
-    id 'com.android.application'
-    // START: FlutterFire Configuration
-    id 'com.google.gms.google-services'
-    // END: FlutterFire Configuration
-    id 'kotlin-android' // If you are using Kotlin
-    id 'dev.flutter.flutter-gradle-plugin'
-}
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply from: "../packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'kotlin-android'
 
 android {
-    namespace = "com.example.sabeel"
-    compileSdkVersion 34
-    ndkVersion = "23.1.7779620" // Adjust this NDK version if necessary
+    namespace 'com.sabeel.app' // Replace with your actual package name
+    compileSdkVersion 33
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+    defaultConfig {
+        applicationId "com.sabeel.app"
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1 // Replace with your actual version code
+        versionName "1.0.0" // Replace with your actual version name
     }
-
-defaultConfig {
-    applicationId = "com.example.sabeel"
-    minSdkVersion 23
-    targetSdkVersion 34
-    versionCode = project.hasProperty('flutterVersionCode') ? flutterVersionCode.toInteger() : 1
-    versionName = project.hasProperty('flutterVersionName') ? flutterVersionName : "1.0.0"
-}
-
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.debug
+            minifyEnabled true // Enable code shrinking
+            shrinkResources true // Enable resource shrinking
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.google.firebase:firebase-analytics'
+}

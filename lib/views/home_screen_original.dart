@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/routes.dart';
@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _speechToText.cancel();
     super.dispose();
   }
+
   // This has to happen only once per app
   void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
@@ -71,12 +72,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void _toggleLayout() async {
     setState(() {
       _speechEnabled = !_speechEnabled;
-      if(_speechEnabled) _startListening();
+      if (_speechEnabled)
+        _startListening();
       else {
-      _stopListening();
-      _lastWords = '';
-      
-    }});
+        _stopListening();
+        _lastWords = '';
+      }
+    });
   }
 
   @override
@@ -87,17 +89,16 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: const Color.fromARGB(255, 0, 0, 0)),
         leading: AuthService.firebase().currentUser == null
-        ? IconButton(
-            icon: Icon(Icons.arrow_back, size: 35),
-            onPressed: () {
-          context.go(mapDownloadRoute);
-            },
-          )
-        : null,
-        
+            ? IconButton(
+                icon: Icon(Icons.arrow_back, size: 35),
+                onPressed: () {
+                  context.go(mapDownloadRoute);
+                },
+              )
+            : null,
         actions: [
           if (AuthService.firebase().currentUser != null)
-          menuActionDialog(context),
+            menuActionDialog(context),
         ],
       ),
       body: AnimatedSwitcher(
@@ -114,127 +115,131 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       key: ValueKey(1),
       decoration: backgroundGradient(),
-        child: Stack(
-          children: [
-            
-        AnimatedSwitcher(
-          duration: Duration(milliseconds: 500),
-          child: 
-          _speechEnabled
-              ? Container(
-            key: ValueKey(1),
-            margin: EdgeInsets.all(20), // Add top margin
-            decoration: buildSlider(),
-            child: Stack(
-              children: [
-              VoiceActivityIndicator(),
-                Positioned(
-                top: MediaQuery.of(context).size.height / 5,
-                  child: Container(
+      child: Stack(
+        children: [
+          AnimatedSwitcher(
+            duration: Duration(milliseconds: 500),
+            child: _speechEnabled
+                ? Container(
+                    key: ValueKey(1),
                     margin: EdgeInsets.all(20), // Add top margin
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        
-                        children:[ 
-                           FittedBox(
-                            fit: BoxFit.contain,
-                            child: Container(
-                                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/1.3),
-                                child: Text(
-                                    _speechToText.isListening ?'You said: $_lastWords' : 'Listening...',
-                                  style: TextStyle(
-                                  fontSize: 24,
-                                  color: const Color.fromARGB(255, 13, 13, 13),
-                                  fontWeight: FontWeight.bold,
+                    decoration: buildSlider(),
+                    child: Stack(
+                      children: [
+                        VoiceActivityIndicator(),
+                        Positioned(
+                          top: MediaQuery.of(context).size.height / 5,
+                          child: Container(
+                            margin: EdgeInsets.all(20), // Add top margin
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: Container(
+                                      constraints: BoxConstraints(
+                                          maxWidth: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              1.3),
+                                      child: Text(
+                                        _speechToText.isListening
+                                            ? 'You said: $_lastWords'
+                                            : 'Listening...',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          color: const Color.fromARGB(
+                                              255, 13, 13, 13),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                        ]
-                      ),
+                                ]),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: MediaQuery.of(context).size.height / 35,
+                          right: MediaQuery.of(context).size.width / 20,
+                          child: buildCircularButton(
+                              Icons.check, const Color(0xFF85AB59), () {
+                            player.play(
+                                AssetSource('sounds/microphone/confirm.mp3'));
+                            context.push(cameraScreenRoute);
+                          }, 130),
+                        ),
+                        Positioned(
+                          bottom: MediaQuery.of(context).size.height / 35,
+                          left: MediaQuery.of(context).size.width / 20,
+                          child: buildCircularButton(Icons.refresh,
+                              const Color.fromARGB(255, 180, 42, 42), () async {
+                            await player.play(
+                                AssetSource('sounds/microphone/refresh.mp3'));
+
+                            setState(() {
+                              _lastWords = '';
+                            });
+                          }, 130),
+                        ),
+                      ],
                     ),
-                  ),
-           
-              Positioned(
-            bottom: MediaQuery.of(context).size.height / 35,
-            right: MediaQuery.of(context).size.width / 20,
-            child: buildCircularButton(Icons.check, const Color(0xFF85AB59), () {
-              player.play(AssetSource('sounds/microphone/confirm.mp3'));
-              context.go(cameraScreenRoute);
-            }, 130),
-                ),
-                Positioned(
-            bottom: MediaQuery.of(context).size.height / 35,
-            left: MediaQuery.of(context).size.width / 20,
-            child: buildCircularButton(Icons.refresh, const Color.fromARGB(255, 180, 42, 42),
-             () async {
-                await player.play(AssetSource('sounds/microphone/refresh.mp3'));
-              
-                setState(() {
-                  _lastWords = '';
-                });
-             }
-             , 130),
-                ),
-              ],
+                  )
+                : Container(key: ValueKey(2)),
+          ),
+          _buildTitle("New\nWaypoint"),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            top: _speechEnabled
+                ? MediaQuery.of(context).size.height / 20
+                : MediaQuery.of(context).size.height / 3.5,
+            left: _speechEnabled
+                ? MediaQuery.of(context).size.width / 10
+                : MediaQuery.of(context).size.width / 6.5,
+            child: GestureDetector(
+              onTap: _toggleLayout,
+              child: _buildMicButton(),
             ),
-          )
-              : Container(key: ValueKey(2)),
-        )
-                ,
-            
-            _buildTitle("New\nWaypoint"),
+          ),
+          if (AuthService.firebase().currentUser != null)
             AnimatedPositioned(
+              curve: Curves.easeInOut,
               duration: const Duration(milliseconds: 300),
-              top: _speechEnabled ? MediaQuery.of(context).size.height/20 : MediaQuery.of(context).size.height / 3.5,
-              left: _speechEnabled ? MediaQuery.of(context).size.width/10 : MediaQuery.of(context).size.width / 6.5,
-              child: GestureDetector(
-                onTap: _toggleLayout,
-                child: _buildMicButton(),
-              ),
-            ),
-            if (AuthService.firebase().currentUser != null)
-              AnimatedPositioned(
-                curve: Curves.easeInOut,
-                duration: const Duration(milliseconds: 300),
-                bottom: _speechEnabled ? -200 : 10,
-                left: MediaQuery.of(context).size.width / 20,
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 20), // Add bottom margin
-                  width: MediaQuery.of(context).size.width *
-                      0.9, // 75% of screen width
-                  height: MediaQuery.of(context).size.height * 0.15,
-                  child: ElevatedButton(
-                    onPressed: () async  {
-                      if(Platform.isIOS){
-                        openWhatsAppChat(phoneNumber, messageContent);
-                      }
-                      else context.push(videoRecorderRoute);
-                  
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFB42A2A),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(20),
-                      ),
-                      textStyle: GoogleFonts.roboto(
-                        fontSize: 85,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 2.0, 
-                      ),
-                      minimumSize: const Size(double.infinity, 60),
-                      shadowColor: Colors.black.withOpacity(1),
-                      elevation: 20,
+              bottom: _speechEnabled ? -200 : 10,
+              left: MediaQuery.of(context).size.width / 20,
+              child: Container(
+                margin: EdgeInsets.only(bottom: 20), // Add bottom margin
+                width: MediaQuery.of(context).size.width *
+                    0.9, // 75% of screen width
+                height: MediaQuery.of(context).size.height * 0.15,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (!kIsWeb && Platform.isIOS) {
+                      openWhatsAppChat(phoneNumber, messageContent);
+                    } else
+                      context.push(videoRecorderRoute);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFB42A2A),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text('SOS'),
+                    textStyle: GoogleFonts.roboto(
+                      fontSize: 85,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2.0,
+                    ),
+                    minimumSize: const Size(double.infinity, 60),
+                    shadowColor: Colors.black.withOpacity(1),
+                    elevation: 20,
                   ),
+                  child: const Text('SOS'),
                 ),
               ),
-          ],
-        ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -246,20 +251,26 @@ class _HomeScreenState extends State<HomeScreen> {
           _speechEnabled
               ? await player
                   .play(AssetSource('sounds/microphone/active_mic.mp3'))
-              : await player.play(
-                  AssetSource('sounds/microphone/active_microphone.mp3'));
+              : await player
+                  .play(AssetSource('sounds/microphone/active_microphone.mp3'));
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: _speechEnabled ? (MediaQuery.of(context).size.width/1.4)/2.73 : MediaQuery.of(context).size.width/1.4,
-          height: _speechEnabled ? (MediaQuery.of(context).size.height/3.2)/2.73 : MediaQuery.of(context).size.height/3.2,
+          width: _speechEnabled
+              ? (MediaQuery.of(context).size.width / 1.4) / 2.73
+              : MediaQuery.of(context).size.width / 1.4,
+          height: _speechEnabled
+              ? (MediaQuery.of(context).size.height / 3.2) / 2.73
+              : MediaQuery.of(context).size.height / 3.2,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xFF85AB59),
             boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
           ),
           child: Icon(_speechEnabled ? Icons.mic : Icons.mic_off,
-              size: _speechEnabled ? 80 : MediaQuery.of(context).size.width/2.9, color: Colors.black87),
+              size:
+                  _speechEnabled ? 80 : MediaQuery.of(context).size.width / 2.9,
+              color: Colors.black87),
         ),
       ),
     );
@@ -271,17 +282,16 @@ class _HomeScreenState extends State<HomeScreen> {
       curve: Curves.easeInOut,
       top: _speechEnabled ? -200 : MediaQuery.of(context).size.height / 20,
       left: MediaQuery.of(context).size.width / 20,
-      child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children:[ Text(
-              title,
-              style: GoogleFonts.roboto(
-                fontSize: MediaQuery.of(context).size.width / 4.7,
-                fontWeight: FontWeight.bold,
-                height: 0.8,
-              ),
-        ),]
-      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(
+          title,
+          style: GoogleFonts.roboto(
+            fontSize: MediaQuery.of(context).size.width / 4.7,
+            fontWeight: FontWeight.bold,
+            height: 0.8,
+          ),
+        ),
+      ]),
     );
   }
 }
