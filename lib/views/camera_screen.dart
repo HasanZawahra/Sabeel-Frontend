@@ -1,8 +1,12 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
+import 'package:sabeel/services/sos/constants.dart';
+import 'package:sabeel/services/sos/whatsapp_functions.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
 import 'package:sabeel/utils/circular_button.dart';
 
@@ -43,29 +47,30 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  
       body: Container(
         decoration: backgroundGradient(),
         child: Column(
           children: [
-          SizedBox(height: 32),
+            SizedBox(height: 32),
             // Destination progress bar
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.volume_up),
                       Text(
                         "Destination Progress",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       SizedBox(width: 24), // Spacer
                     ],
                   ),
-                  LinearProgressIndicator(value: 0.75, minHeight: 8, color: Colors.green),
+                  LinearProgressIndicator(
+                      value: 0.75, minHeight: 8, color: Colors.green),
                 ],
               ),
             ),
@@ -79,18 +84,25 @@ class _CameraScreenState extends State<CameraScreen> {
                       child: CameraPreview(_controller!),
                     ),
             ),
-        
-        
+
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  if(currUser) buildCircularButton(Icons.sos_rounded,  Color(0xFFB42A2A), () {},150),
-                  if(currUser) SizedBox(width: 32),
-                  buildCircularButton(Icons.mic,  const Color(0xFF85AB59),  () async {
+                  if (currUser)
+                    buildCircularButton(Icons.sos_rounded, Color(0xFFB42A2A),
+                        () {
+                      if (!kIsWeb && Platform.isIOS) {
+                        openWhatsAppChat(phoneNumber, messageContent);
+                      } else
+                        context.push(videoRecorderRoute);
+                    }, 120),
+                  if (currUser) SizedBox(width: 32),
+                  buildCircularButton(Icons.mic, const Color(0xFF85AB59),
+                      () async {
                     context.go(homeRoute);
-                  }, 150),
+                  }, 120),
                 ],
               ),
             ),
@@ -99,6 +111,4 @@ class _CameraScreenState extends State<CameraScreen> {
       ),
     );
   }
-
-  
 }

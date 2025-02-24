@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class VoiceActivityIndicator extends StatefulWidget {
@@ -32,27 +31,28 @@ class _VoiceActivityIndicatorState extends State<VoiceActivityIndicator>
   }
 
   void resetVoiceInput() {
-  setState(() {
-    _controller.value = 0;
-  });
-}
+    setState(() {
+      _controller.value = 0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: MediaQuery.of(context).size.height/18,
-      right: MediaQuery.of(context).size.width/10,
+      top: MediaQuery.of(context).size.height / 18,
+      right: MediaQuery.of(context).size.width / 10,
       child: Container(
-        
         width: 120,
         height: 60,
-        
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(9, (index) {
             return AnimatedContainer(
               duration: Duration(milliseconds: 100),
-              height:  7 + (!index.isEven? _controller.value * 60 : _controller.value * 30),
+              height: 7 +
+                  (!index.isEven
+                      ? _controller.value * 60
+                      : _controller.value * 30),
               width: 6,
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 89, 89, 89),
