@@ -45,7 +45,10 @@ dependencies:
   whatsapp_share2: ^2.0.2
   share: ^2.0.4
   share_plus: ^10.1.4
-
+  flutter_tts: ^4.2.2
+  google_mlkit_object_detection: ^0.14.0
+  image: ^3.0.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
