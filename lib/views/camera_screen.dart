@@ -54,7 +54,7 @@ class _CameraScreenState extends State<CameraScreen> {
   void _initializeObjectDetector() {
     final options = ObjectDetectorOptions(
       mode: DetectionMode.stream,
-      classifyObjects: true,
+      classifyObjects: false,
       multipleObjects: true,
     );
     _objectDetector = ObjectDetector(options: options);
@@ -142,27 +142,52 @@ Future<File> _convertCameraImageToFile(CameraImage image, String path) async {
 
   try {
     final objects = await _objectDetector.processImage(inputImage);
-    print("Detected objects: ${objects.length}");
+    int numObsticles = 0;
 
     if (objects.isNotEmpty) {
       for (var obj in objects) {
-        print("Object detected at ${obj.boundingBox}");
         if (_isObstacle(obj)) {
+          print("");
+          numObsticles++;
           _alertUser();
           break;
         }
       }
+    print("Detected objects: ${numObsticles}");
     }
+
   } catch (e) {
     print("Error detecting objects: $e");
   }
 }
 
-
   bool _isObstacle(DetectedObject obj) {
-    // Example: Consider objects detected below a certain height as obstacles
-    return obj.boundingBox.top > 300;
-  }
+  final double imageWidth = 640;  // Adjust based on actual image width
+  final double imageHeight = 480; // Adjust based on actual image height
+
+  // Define the triangle (assuming a symmetrical triangle in the center)
+  final img.Point topPoint = img.Point(imageWidth / 2, imageHeight * 0.3); // Peak of the triangle
+  final img.Point bottomLeft = img.Point(imageWidth * 0.2, imageHeight * 0.9);
+  final img.Point bottomRight = img.Point(imageWidth * 0.8, imageHeight * 0.9);
+
+  // Convert bounding box center to a point
+  final double centerX = obj.boundingBox.left + (obj.boundingBox.width / 2);
+  final double centerY = obj.boundingBox.top + (obj.boundingBox.height / 2);
+  final img.Point objectCenter = img.Point(centerX, centerY);
+
+
+  // Check if object is inside the triangular region
+  return _isPointInsideTriangle(objectCenter, topPoint, bottomLeft, bottomRight);
+}
+
+// Function to check if a point is inside a triangle using Barycentric coordinates
+bool _isPointInsideTriangle(img.Point p, img.Point a, img.Point b, img.Point c) {
+  num area = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+  double s = ((a.y - c.y) * (p.x - c.x) + (c.x - a.x) * (p.y - c.y)) / area;
+  double t = ((c.y - b.y) * (p.x - c.x) + (b.x - c.x) * (p.y - c.y)) / area;
+
+  return s > 0 && t > 0 && (s + t) < 1;
+}
 
   void _alertUser() async {
     await flutterTts.speak("Obstacle detected ahead");
