@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:sabeel/views/camera_screen.dart';
-import 'package:sabeel/views/home_screen_original.dart';
+import 'package:sabeel/views/home_screen.dart';
 import 'package:sabeel/views/id_verification_screen.dart';
 import 'package:sabeel/views/map_download_screen.dart';
 import 'package:sabeel/constants/routes.dart';

@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -8,6 +10,7 @@ import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart
 import 'package:path_provider/path_provider.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
+import 'package:sabeel/services/object_detection/tri.dart';
 import 'package:sabeel/services/sos/constants.dart';
 import 'package:sabeel/services/sos/whatsapp_functions.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
@@ -28,6 +31,9 @@ class _CameraScreenState extends State<CameraScreen> {
   late ObjectDetector _objectDetector;
   late List<CameraDescription> cameras;
   FlutterTts flutterTts = FlutterTts();
+  final AudioPlayer audioPlayer = AudioPlayer();
+  DateTime? _lastAlertTime;
+
 
   @override
   void initState() {
@@ -142,46 +148,56 @@ Future<File> _convertCameraImageToFile(CameraImage image, String path) async {
 
   try {
     final objects = await _objectDetector.processImage(inputImage);
-    int numObsticles = 0;
-
+    bool isObstacle = false;
+    int numObstacles = 0;
     if (objects.isNotEmpty) {
       for (var obj in objects) {
-        if (_isObstacle(obj)) {
-          print("");
-          numObsticles++;
-          _alertUser();
+        final size = MediaQuery.of(context).size;
+        if (_isObstacle(obj, size.width.toInt(), size.height.toInt())) {
+          isObstacle = true;
+          numObstacles++;
           break;
         }
       }
-    print("Detected objects: ${numObsticles}");
+    
+      if(isObstacle){
+      print("Obstacles detected: $numObstacles");   
+         _alertUser();
+        
     }
+    
+    }
+    print("\n");
 
   } catch (e) {
     print("Error detecting objects: $e");
   }
 }
 
-  bool _isObstacle(DetectedObject obj) {
-  final double imageWidth = 640;  // Adjust based on actual image width
-  final double imageHeight = 480; // Adjust based on actual image height
+  bool _isObstacle(DetectedObject obj, int w, int h) {
+  final int imageWidth = w;
+  final int imageHeight = h;
 
-  // Define the triangle (assuming a symmetrical triangle in the center)
-  final img.Point topPoint = img.Point(imageWidth / 2, imageHeight * 0.3); // Peak of the triangle
-  final img.Point bottomLeft = img.Point(imageWidth * 0.2, imageHeight * 0.9);
-  final img.Point bottomRight = img.Point(imageWidth * 0.8, imageHeight * 0.9);
+  final Point topPoint = Point(imageWidth/2.4, imageHeight*0.05);
+  final Point bottomLeft = Point(imageWidth*0.1, imageHeight*0.65);
+  final Point bottomRight = Point(imageWidth*0.8, imageHeight*0.65);
 
-  // Convert bounding box center to a point
-  final double centerX = obj.boundingBox.left + (obj.boundingBox.width / 2);
-  final double centerY = obj.boundingBox.top + (obj.boundingBox.height / 2);
-  final img.Point objectCenter = img.Point(centerX, centerY);
+  // Get bounding box corners
+  final Point topLeft = Point(obj.boundingBox.left, obj.boundingBox.top);
+  final Point topRight = Point(obj.boundingBox.left + obj.boundingBox.width, obj.boundingBox.top);
+  final Point bottomLeftBox = Point(obj.boundingBox.left, obj.boundingBox.top + obj.boundingBox.height);
+  final Point bottomRightBox = Point(obj.boundingBox.left + obj.boundingBox.width, obj.boundingBox.top + obj.boundingBox.height);
 
-
-  // Check if object is inside the triangular region
-  return _isPointInsideTriangle(objectCenter, topPoint, bottomLeft, bottomRight);
+  
+  return _isPointInsideTriangle(topLeft, topPoint, bottomLeft, bottomRight) ||
+         _isPointInsideTriangle(topRight, topPoint, bottomLeft, bottomRight) ||
+         _isPointInsideTriangle(bottomLeftBox, topPoint, bottomLeft, bottomRight) ||
+         _isPointInsideTriangle(bottomRightBox, topPoint, bottomLeft, bottomRight);
 }
 
+
 // Function to check if a point is inside a triangle using Barycentric coordinates
-bool _isPointInsideTriangle(img.Point p, img.Point a, img.Point b, img.Point c) {
+bool _isPointInsideTriangle(Point p, Point a, Point b, Point c) {
   num area = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
   double s = ((a.y - c.y) * (p.x - c.x) + (c.x - a.x) * (p.y - c.y)) / area;
   double t = ((c.y - b.y) * (p.x - c.x) + (b.x - c.x) * (p.y - c.y)) / area;
@@ -189,9 +205,15 @@ bool _isPointInsideTriangle(img.Point p, img.Point a, img.Point b, img.Point c) 
   return s > 0 && t > 0 && (s + t) < 1;
 }
 
+
   void _alertUser() async {
-    await flutterTts.speak("Obstacle detected ahead");
+  DateTime now = DateTime.now();
+  
+  if (_lastAlertTime == null || now.difference(_lastAlertTime!).inSeconds >= 3) {
+    _lastAlertTime = now; 
+    audioPlayer.play(AssetSource("sounds/microphone/yell-stop-it-82603.mp3"));
   }
+}
 
   @override
   void dispose() {
@@ -234,7 +256,21 @@ bool _isPointInsideTriangle(img.Point p, img.Point a, img.Point b, img.Point c) 
                   ? Center(child: CircularProgressIndicator())
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: CameraPreview(_controller!),
+                      child: Stack(
+      children: [
+        CameraPreview(_controller!), // Camera feed
+
+        // Overlay for the detection zone
+        Positioned.fill(
+          child: CustomPaint(
+            painter: TrianglePainter(
+              imageWidth: MediaQuery.of(context).size.width,
+              imageHeight: MediaQuery.of(context).size.height,
+            ),
+          ),
+        ),
+      ],
+    ),
                     ),
             ),
             Padding(
