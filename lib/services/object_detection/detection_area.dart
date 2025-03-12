@@ -13,9 +13,9 @@ class TrianglePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     // Define the triangle points
-    final Offset topPoint = Offset(imageWidth/2.4, imageHeight*0.05); // Apex (bottom center)
-    final Offset bottomLeft = Offset(imageWidth*0.1, imageHeight*0.65); // Bottom-left corner
-    final Offset bottomRight = Offset(imageWidth*0.8, imageHeight*0.65); // Bottom-right corner
+    final Offset topPoint = Offset(imageWidth/2.4, imageHeight*0.3); // Apex (bottom center)
+    final Offset bottomLeft = Offset(imageWidth*0.1, imageHeight*0.60); // Bottom-left corner
+    final Offset bottomRight = Offset(imageWidth*0.75, imageHeight*0.60); // Bottom-right corner
 
     final Path path = Path()
       ..moveTo(topPoint.dx, topPoint.dy)
