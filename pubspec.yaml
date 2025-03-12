@@ -45,7 +45,10 @@ dependencies:
   whatsapp_share2: ^2.0.2
   share: ^2.0.4
   share_plus: ^10.1.4
-
+  flutter_tts: ^4.2.2
+  google_mlkit_object_detection: ^0.14.0
+  image: ^3.0.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -76,7 +79,7 @@ flutter:
     - assets/sounds/microphone/active_mic.mp3
     - assets/sounds/microphone/refresh.mp3
     - assets/sounds/microphone/confirm.mp3
-  
+    - assets/sounds/microphone/yell-stop-it-82603.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
