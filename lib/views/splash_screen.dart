@@ -28,9 +28,11 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Image.asset('assets/gifs/splashscreen-en.gif'),
-      ),
+      body: Semantics(
+          label: 'Splash screen animation',
+          hint: "wait a moment until the app is ready",
+          child: Image.asset('assets/gifs/splashscreen-en.gif'),
+        ),
     );
   }
 }

@@ -7,23 +7,31 @@ import 'package:sabeel/utils/logout_dialog.dart';
 
 PopupMenuButton<MenuAction> menuActionDialog(BuildContext context) {
   return PopupMenuButton<MenuAction>(
-          icon: Icon(Icons.menu, size: 35,), // Change the icon to a burger menu
-          onSelected: (value) async {
-            switch (value) {
-          case MenuAction.logout:
-            final shouldUserLogOUt = await showLogoutDialog(context);
-            if (shouldUserLogOUt) {
-              await AuthService.firebase().logOut();
-             context.go(idVerificationRoute);
-            }
-            break;
-            }
-          },
-          itemBuilder: (context) {
-            return const [
-          PopupMenuItem<MenuAction>(
-              value: MenuAction.logout, child: Text("Log Out"))
-            ];
-          },
-        );
+    icon: Semantics(
+      label: 'Menu button',
+      child: Icon(Icons.menu, size: 35),
+    ),
+    onSelected: (value) async {
+      switch (value) {
+        case MenuAction.logout:
+          final shouldUserLogOut = await showLogoutDialog(context);
+          if (shouldUserLogOut) {
+            await AuthService.firebase().logOut();
+            context.go(idVerificationRoute);
+          }
+          break;
+      }
+    },
+    itemBuilder: (context) {
+      return [
+        PopupMenuItem<MenuAction>(
+          value: MenuAction.logout,
+          child: Semantics(
+            label: 'Log Out option',
+            child: Text("Log Out"),
+          ),
+        ),
+      ];
+    },
+  );
 }

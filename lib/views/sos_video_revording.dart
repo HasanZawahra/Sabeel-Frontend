@@ -80,7 +80,11 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
       return Scaffold(
         body: Container(
             decoration: backgroundGradient(),
-            child: Center(child: CircularProgressIndicator())),
+            child: Center(child:  Semantics(
+              label: 'Loading camera',
+              child: CircularProgressIndicator(),
+            ),),
+          ),
       );
     }
 
@@ -95,19 +99,32 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
               child: Expanded(
                 child: _controller == null || !_controller!.value.isInitialized
-                    ? Center(child: CircularProgressIndicator())
+                    ? Center(child: Semantics(
+                          label: 'Loading camera preview',
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: CameraPreview(_controller!),
+                        child: Semantics(
+                          label: 'Camera preview',
+                          child: CameraPreview(_controller!),
+                        ),
                       ),
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                buildCircularButton(_isRecording ? Icons.stop : Icons.videocam,
-                 Colors.red, _isRecording ? _stopRecording : _startRecording,
-                120)
+                Semantics(
+                  label: _isRecording ? 'Stop recording' : 'Start recording',
+                  child: buildCircularButton(
+                    _isRecording ? Icons.stop : Icons.videocam,
+                    Colors.red,
+                    _isRecording ? _stopRecording : _startRecording,
+                    120,
+                  ),
+                ),
               ],
             ),
           ],

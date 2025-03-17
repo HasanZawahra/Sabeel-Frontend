@@ -20,6 +20,7 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
   void initState() {
     super.initState();
     for (int i = 0; i < size; i++) {
+      final name = maps_names[i].split('_').join(' ');
       maps.add(
       Container(
                 padding: EdgeInsets.all(16),
@@ -27,30 +28,42 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
                 decoration: BoxDecoration(
                   color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(10)),
-        child:  TextButton(
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+        child:  Semantics(
+            label: 'Map of ${maps_names[i].split('_').join(' ')}',
+            child: TextButton(
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () {
+                context.go(mapDownloadProgressRoute);
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Semantics(
+                    label: '$name map',
+                    child: Text(
+                      name,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                  ),
+                  Semantics(
+                    label: '$name logo',
+                    child: Image.asset(
+                      'assets/maps_logos/${maps_names[i].split(' ').join('_')}.png',
+                      height: 55,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-        onPressed: () { 
-          context.go(mapDownloadProgressRoute);
-          },
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              maps_names[i].split('_').join(' '),
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            Image.asset(
-              'assets/maps_logos/${maps_names[i].split(' ').join('_')}.png',
-              height: 55,
-            ),
-          ],
-        ),
-      )
       ));
     }
   }
@@ -62,12 +75,15 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
         leading: AuthService.firebase().currentUser == null
-            ? IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  context.go(idVerificationRoute);
-                },
-              )
+            ? Semantics(
+              label: 'Back',
+              child: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    context.go(idVerificationRoute);
+                  },
+                ),
+            )
             : null,
         actions: [
           if (AuthService.firebase().currentUser != null)
@@ -80,14 +96,22 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "University Map",
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            Semantics(
+              label: 'University Map title',
+              child: Text(
+                "Choose a Map",
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
             ),
             SizedBox(height: 12),
-            Text(
-              "Choose the Map of the Desired University.",
-              style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 127, 127, 127)),
+            Semantics(
+              label: 'Instruction text, Choose the Desired Map.',
+              child: Text(
+                "Choose the Desired Map.",
+                style: TextStyle(
+                    fontSize: 16,
+                    color: const Color.fromARGB(255, 127, 127, 127)),
+              ),
             ),
             SizedBox(height: 20),
             GestureDetector(
