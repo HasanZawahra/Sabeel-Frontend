@@ -13,7 +13,7 @@ import 'package:sabeel/services/object_detection/functions.dart';
 import 'package:sabeel/services/sos/constants.dart';
 import 'package:sabeel/services/sos/whatsapp_functions.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
-import 'package:sabeel/utils/circular_button.dart';
+import 'package:sabeel/utils/buttons.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -32,6 +32,7 @@ class _CameraScreenState extends State<CameraScreen> {
   final AudioPlayer audioPlayer = AudioPlayer();
   DateTime? _lastAlertTime;
   List<DetectedObject> detectedObjects = [];
+  
 
   @override
   void initState() {
@@ -216,6 +217,7 @@ class _CameraScreenState extends State<CameraScreen> {
                     label: 'Microphone button',
                     child: buildCircularButton(Icons.mic, const Color(0xFF85AB59),
                         () async {
+                          await audioPlayer.play(AssetSource('sounds/microphone/active_mic.mp3'));
                       context.go(homeRoute);
                     }, 120),
                   ),

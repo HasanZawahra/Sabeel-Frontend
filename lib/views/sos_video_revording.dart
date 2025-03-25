@@ -3,7 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:sabeel/services/sos/constants.dart';
 import 'package:sabeel/services/sos/whatsapp_functions.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
-import 'package:sabeel/utils/circular_button.dart';
+import 'package:sabeel/utils/buttons.dart';
 
 class VideoRecorderScreen extends StatefulWidget {
   const VideoRecorderScreen({super.key});
