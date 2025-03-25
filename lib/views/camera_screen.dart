@@ -13,7 +13,7 @@ import 'package:sabeel/services/object_detection/functions.dart';
 import 'package:sabeel/services/sos/constants.dart';
 import 'package:sabeel/services/sos/whatsapp_functions.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
-import 'package:sabeel/utils/circular_button.dart';
+import 'package:sabeel/utils/buttons.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -32,6 +32,7 @@ class _CameraScreenState extends State<CameraScreen> {
   final AudioPlayer audioPlayer = AudioPlayer();
   DateTime? _lastAlertTime;
   List<DetectedObject> detectedObjects = [];
+  
 
   @override
   void initState() {
@@ -146,16 +147,23 @@ class _CameraScreenState extends State<CameraScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Destination Progress",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                      Semantics(
+                        label: 'Destination Progress',
+                        child: Text(
+                          "Destination Progress",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
                       ),
                       SizedBox(width: 24), // Spacer
                     ],
                   ),
-                  LinearProgressIndicator(
-                      value: 0.75, minHeight: 8, color: Colors.green),
+                  Semantics(
+                    label: 'Progress bar',
+                    value: '75% completed',
+                    child: LinearProgressIndicator(
+                        value: 0.75, minHeight: 8, color: Colors.green),
+                  ),
                 ],
               ),
             ),
@@ -163,13 +171,18 @@ class _CameraScreenState extends State<CameraScreen> {
             // Camera Preview
             Expanded(
               child: _controller == null || !_controller!.value.isInitialized
-                  ? Center(child: CircularProgressIndicator())
+                  ? Center(child: Semantics(
+                        label: 'Loading camera preview',
+                        child: CircularProgressIndicator(),
+                      ),)
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Stack(
                         children: [
-                          CameraPreview(_controller!), // Camera feed
-
+                          Semantics(
+                            label: 'Camera preview',
+                            child: CameraPreview(_controller!), // Camera feed
+                          ), // Camera feed
                           Positioned.fill(
                             child: CustomPaint(
                               painter: TrianglePainter(
@@ -188,19 +201,26 @@ class _CameraScreenState extends State<CameraScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   if (currUser)
-                    buildCircularButton(Icons.sos_rounded, Color(0xFFB42A2A),
-                        () {
-                      if (!kIsWeb && Platform.isIOS) {
-                        openWhatsAppChat(phoneNumber, messageContent);
-                      } else {
-                        context.push(videoRecorderRoute);
-                      }
-                    }, 120),
+                    Semantics(
+                      label: 'SOS button',
+                      child: buildCircularButton(Icons.sos_rounded,
+                          Color(0xFFB42A2A), () {
+                        if (!kIsWeb && Platform.isIOS) {
+                          openWhatsAppChat(phoneNumber, messageContent);
+                        } else {
+                          context.push(videoRecorderRoute);
+                        }
+                      }, 120),
+                    ),
                   if (currUser) SizedBox(width: 32),
-                  buildCircularButton(Icons.mic, const Color(0xFF85AB59),
-                      () async {
-                    context.go(homeRoute);
-                  }, 120),
+                   Semantics(
+                    label: 'Microphone button',
+                    child: buildCircularButton(Icons.mic, const Color(0xFF85AB59),
+                        () async {
+                          await audioPlayer.play(AssetSource('sounds/microphone/active_mic.mp3'));
+                      context.go(homeRoute);
+                    }, 120),
+                  ),
                 ],
               ),
             ),

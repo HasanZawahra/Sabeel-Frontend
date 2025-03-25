@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sabeel/constants/destinations.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
 import 'package:sabeel/services/sos/constants.dart';
 import 'package:sabeel/services/sos/whatsapp_functions.dart';
 import 'package:sabeel/utils/background_grdiant.dart';
-import 'package:sabeel/utils/circular_button.dart';
+import 'package:sabeel/utils/buttons.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,6 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final player = AudioPlayer();
   SpeechToText _speechToText = SpeechToText();
   String _lastWords = '';
+  FlutterTts flutterTts = FlutterTts();
+  bool _hasSpoken = false;
+  String _lastSpokenPhrase = "";
 
   @override
   void initState() {
@@ -36,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _speechToText.cancel();
+    flutterTts.stop();
     super.dispose();
   }
 
@@ -48,9 +54,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Each time to start a speech recognition session
   void _startListening() async {
-    await _speechToText.listen(onResult: _onSpeechResult);
-    setState(() {});
-  }
+  await _speechToText.listen(
+    onResult: _onSpeechResult,
+    // listenMode: ListenMode.dictation,
+    // partialResults: false, // Avoid catching partial results
+    onSoundLevelChange: (level) {
+      if (level < 0.2) return; // Ignore very low sound levels
+    },
+  );
+  setState(() {});
+}
+
 
   /// Manually stop the active speech recognition session
   /// Note that there are also timeouts that each platform enforces
@@ -64,19 +78,26 @@ class _HomeScreenState extends State<HomeScreen> {
   /// This is the callback that the SpeechToText plugin calls when
   /// the platform returns recognized words.
   void _onSpeechResult(SpeechRecognitionResult result) {
-    setState(() {
-      _lastWords = result.recognizedWords;
+    String recognizedText = result.recognizedWords.toLowerCase();
+      if (recognizedText != _lastSpokenPhrase) {
+       setState(() {
+      _lastWords = recognizedText;
+      if( checkForDistination(_lastWords)){
+        _lastWords+= ".\n\nplease confirm your destination by clicking the confirm button on the right bottom.";
+      }
     });
+  }
   }
 
   void _toggleLayout() async {
     setState(() {
       _speechEnabled = !_speechEnabled;
-      if (_speechEnabled)
+      if (_speechEnabled) {
         _startListening();
-      else {
+      } else {
         _stopListening();
         _lastWords = '';
+        _hasSpoken = false;
       }
     });
   }
@@ -89,11 +110,14 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: const Color.fromARGB(255, 0, 0, 0)),
         leading: AuthService.firebase().currentUser == null
-            ? IconButton(
-                icon: Icon(Icons.arrow_back, size: 35),
-                onPressed: () {
-                  context.go(mapDownloadRoute);
-                },
+            ? Semantics(
+                label: 'Back',
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back, size: 35),
+                  onPressed: () {
+                    context.go(mapDownloadRoute);
+                  },
+                ),
               )
             : null,
         actions: [
@@ -142,17 +166,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   .size
                                                   .width /
                                               1.3),
-                                      child: Text(
-                                        _speechToText.isListening
-                                            ? 'You said: $_lastWords'
-                                            : 'Listening...',
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          color: const Color.fromARGB(
-                                              255, 13, 13, 13),
-                                          fontWeight: FontWeight.bold,
+                                
+                                      child: Semantics(
+                                        label:   _speechToText.isListening
+                                              ? 'You said: $_lastWords'
+                                              : 'Listening...',
+                                        child: Text(
+                                          _speechToText.isListening
+                                              ? 'You said: $_lastWords'
+                                              : 'Listening...',
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            color: const Color.fromARGB(
+                                                255, 13, 13, 13),
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
+                                      // ),
                                     ),
                                   ),
                                 ]),
@@ -161,25 +192,29 @@ class _HomeScreenState extends State<HomeScreen> {
                         Positioned(
                           bottom: MediaQuery.of(context).size.height / 35,
                           right: MediaQuery.of(context).size.width / 20,
-                          child: buildCircularButton(
-                              Icons.check, const Color(0xFF85AB59), () {
-                            player.play(
-                                AssetSource('sounds/microphone/confirm.mp3'));
-                            context.push(cameraScreenRoute);
-                          }, 130),
+                          child: Semantics(
+                            label: 'Confirm button',
+                            child: buildCircularButton(
+                                Icons.check, const Color(0xFF85AB59), () {
+                              player.play(
+                                  AssetSource('sounds/microphone/confirm.mp3'));
+                              context.push(cameraScreenRoute);
+                            }, 130),
+                          ),
                         ),
                         Positioned(
                           bottom: MediaQuery.of(context).size.height / 35,
                           left: MediaQuery.of(context).size.width / 20,
-                          child: buildCircularButton(Icons.refresh,
-                              const Color.fromARGB(255, 180, 42, 42), () async {
-                            await player.play(
-                                AssetSource('sounds/microphone/refresh.mp3'));
-
-                            setState(() {
-                              _lastWords = '';
-                            });
-                          }, 130),
+                          child: Semantics(
+                            label: 'Refresh button',
+                            child: buildCircularButton(Icons.refresh,
+                                const Color.fromARGB(255, 180, 42, 42),
+                                () async {
+                              await player.play(
+                                  AssetSource('sounds/microphone/refresh.mp3'));
+                              refresh();
+                            }, 130),
+                          ),
                         ),
                       ],
                     ),
@@ -191,14 +226,31 @@ class _HomeScreenState extends State<HomeScreen> {
             duration: const Duration(milliseconds: 300),
             top: _speechEnabled
                 ? MediaQuery.of(context).size.height / 20
-                : MediaQuery.of(context).size.height / 3.5,
+                : MediaQuery.of(context).size.height / 4.5,
             left: _speechEnabled
                 ? MediaQuery.of(context).size.width / 10
                 : MediaQuery.of(context).size.width / 6.5,
             child: GestureDetector(
               onTap: _toggleLayout,
-              child: _buildMicButton(),
+              child: Semantics(
+                label: 'Microphone button',
+                child: _buildMicButton(),
+              ),
             ),
+          ),
+          AnimatedPositioned(
+            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 300),
+            top: MediaQuery.of(context).size.height / 1.77,
+            left: _speechEnabled? -500 : MediaQuery.of(context).size.width / 20,
+            child: Semantics(
+                label: 'Destinations List button',
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.9, 
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  child: buildRectangularButton(sayDestinationsList, Color.fromARGB(255, 106, 180, 42), 'Destinations List', 30),
+                ),
+              ),
           ),
           if (AuthService.firebase().currentUser != null)
             AnimatedPositioned(
@@ -206,35 +258,14 @@ class _HomeScreenState extends State<HomeScreen> {
               duration: const Duration(milliseconds: 300),
               bottom: _speechEnabled ? -200 : 10,
               left: MediaQuery.of(context).size.width / 20,
-              child: Container(
-                margin: EdgeInsets.only(bottom: 20), // Add bottom margin
-                width: MediaQuery.of(context).size.width *
-                    0.9, // 75% of screen width
-                height: MediaQuery.of(context).size.height * 0.15,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (!kIsWeb && Platform.isIOS) {
-                      openWhatsAppChat(phoneNumber, messageContent);
-                    } else
-                      context.push(videoRecorderRoute);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFB42A2A),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    textStyle: GoogleFonts.roboto(
-                      fontSize: 85,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2.0,
-                    ),
-                    minimumSize: const Size(double.infinity, 60),
-                    shadowColor: Colors.black.withOpacity(1),
-                    elevation: 20,
-                  ),
-                  child: const Text('SOS'),
+              child: Semantics(
+                label: 'SOS button',
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 20), // Add bottom margin
+                  width: MediaQuery.of(context).size.width *
+                      0.9, // 75% of screen width
+                  height: MediaQuery.of(context).size.height * 0.135,
+                  child: buildRectangularButton(sos, const Color.fromARGB(248, 194, 13, 0), 'SOS', 75),
                 ),
               ),
             ),
@@ -252,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ? await player
                   .play(AssetSource('sounds/microphone/active_mic.mp3'))
               : await player
-                  .play(AssetSource('sounds/microphone/active_microphone.mp3'));
+                  .play(AssetSource('sounds/microphone/deactive_mic.mp3'));
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
@@ -280,18 +311,86 @@ class _HomeScreenState extends State<HomeScreen> {
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      top: _speechEnabled ? -200 : MediaQuery.of(context).size.height / 20,
+      top: _speechEnabled ? -200 : MediaQuery.of(context).size.height / 50,
       left: MediaQuery.of(context).size.width / 20,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
-          title,
-          style: GoogleFonts.roboto(
-            fontSize: MediaQuery.of(context).size.width / 4.7,
-            fontWeight: FontWeight.bold,
-            height: 0.8,
+        Semantics(
+          label: 'Title: $title',
+          child: Text(
+            title,
+            style: GoogleFonts.roboto(
+              fontSize: 60,
+              fontWeight: FontWeight.bold,
+              height: 0.8,
+            ),
           ),
         ),
       ]),
     );
   }
+
+  void refresh() {
+    setState(() {
+      _lastWords = '';
+      _stopListening();
+      Future.delayed(Duration(seconds: 1), () {
+        _startListening();
+      });
+    });
+  }
+
+  bool checkForDistination(String text) {
+    for (var dist in destinations) {
+      if (text.toLowerCase().contains(dist)) {
+        if (!_hasSpoken) {
+          speak(dist);
+          _hasSpoken = true;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void speak(String text) async {
+  _lastSpokenPhrase = text.toLowerCase();
+  await flutterTts.setLanguage("en-US");
+  await flutterTts.setPitch(1);
+
+  _stopListening(); // Stop listening before speaking
+
+  await flutterTts.speak(
+      "You Want to go to the $text building, please confirm by clicking the confirm button on the right bottom.");
+
+  flutterTts.setCompletionHandler(() {
+    Future.delayed(Duration(milliseconds: 200), () {
+      _startListening(); // Resume listening after speech finishes
+    });
+  });
+
+  Future.delayed(Duration(seconds: 5), () {
+    _hasSpoken = false;
+  });
+}
+
+void sayDestinationsList() async {
+  await flutterTts.setLanguage("en-US");
+  await flutterTts.setPitch(1);
+
+  await flutterTts.speak(
+      "The available destinations are: ${destinations.join(', ')}");
+
+  flutterTts.setCompletionHandler(() {
+    Future.delayed(Duration(milliseconds: 200), () {
+    });
+  });
+}
+
+void sos() {
+  if (!kIsWeb && Platform.isIOS) {
+    openWhatsAppChat(phoneNumber, messageContent);
+  } else
+    context.push(videoRecorderRoute);
+    }
+
 }

@@ -50,35 +50,52 @@ void dispose() {
     _startProgress();
     return Scaffold(
       body:
-       FractionallySizedBox(
-        alignment: Alignment.topCenter,
-        heightFactor: 0.33, // Adjust this value to control the vertical position
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 100),
-            Text(
-              "Downloading Map ...",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 30),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: LinearProgressIndicator(
-                value: progress,
-                backgroundColor: Colors.grey.shade300,
-                color: Colors.black,
-                minHeight: 8,
+       Semantics(
+          label: 'Map downloading progress screen',
+          hint: "This screen shows the progress of the map downloading",
+         child: FractionallySizedBox(
+          alignment: Alignment.topCenter,
+          heightFactor: 0.33, // Adjust this value to control the vertical position
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: 100),
+              Semantics(
+                label: 'Downloading Map',
+                child: Text(
+                  "Downloading Map ...",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "${(progress * 100).toInt()}% completed",
-              style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w500),
-            ),
-          ],
-        ),
-      ),
+              SizedBox(height: 30),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Semantics(
+                  label: 'Progress bar',
+                  value: '${(progress * 100).toInt()}% completed',
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey.shade300,
+                    color: Colors.black,
+                    minHeight: 8,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Semantics(
+                label: 'Progress percentage',
+                child: Text(
+                  "${(progress * 100).toInt()}% completed",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
+          ),
+               ),
+       ),
      
     );
   }
