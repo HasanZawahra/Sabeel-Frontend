@@ -5,14 +5,24 @@ plugins {
     id 'dev.flutter.flutter-gradle-plugin'
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.sabeel.app"
     compileSdkVersion 35
-    ndkVersion = "23.1.7779620" // Adjust this NDK version if necessary
+    ndkVersion = "25.1.8937393"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = '11'
     }
 
     defaultConfig {
@@ -25,8 +35,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true // Enable code shrinking
-            shrinkResources true // Enable resource shrinking
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

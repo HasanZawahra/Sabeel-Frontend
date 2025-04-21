@@ -1,11 +1,11 @@
 buildscript {
-    ext.kotlin_version = '1.7.10' // Updated Kotlin version
+    ext.kotlin_version = '2.1.20' // Reverted to match settings.gradle version
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:7.1.3"
+        classpath "com.android.tools.build:gradle:8.0.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.10'
     }
@@ -21,7 +21,26 @@ allprojects {
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+    
+    // Fix for missing namespace in Flutter plugins
+    if (project.hasProperty('android')) {
+        android {
+            if (!project.hasProperty('namespace') && project.hasProperty('android')) {
+                namespace = project.findProperty('androidPackage') ?: project.findProperty('applicationId') ?: "dev.fluttercommunity.plus.${project.name}"
+            }
+        }
+    }
+    
+    // Special fix for share plugin namespace issue
+    if (project.name == 'share') {
+        if (project.hasProperty('android')) {
+            android {
+                namespace = 'io.flutter.plugins.share'
+            }
+        }
+    }
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
 }

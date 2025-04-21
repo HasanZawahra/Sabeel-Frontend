@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:whatsapp_share2/whatsapp_share2.dart';
+import 'package:share_plus/share_plus.dart';
 
 Future<void> openWhatsAppChat(String phoneNumber, String message) async {
   final Uri url = Uri.parse('https://wa.me/$phoneNumber?text=${Uri.parse(message)}');
@@ -23,16 +23,22 @@ Future<void> shareVideo(String phoneNumber, String videoPath, BuildContext conte
 
       final Uri uri = Uri.parse("whatsapp://send?phone=$phoneNumber&text=${Uri.parse(message)}");
 
-
         if (await canLaunchUrl(uri)) {
+          // First share the message via WhatsApp
           await launchUrl(uri, mode: LaunchMode.externalApplication);
           await Future.delayed(Duration(seconds: 2)); // Wait for chat to open
-
-          await WhatsappShare.shareFile(
-            phone: phoneNumber,
-            filePath: [videoPath],
+          
+          // Then share the file using share_plus
+          await Share.shareXFiles(
+            [XFile(videoPath)],
+            text: "Video from Sabeel App",
           );
         } else {
+          // Fallback - use general sharing if WhatsApp is not installed
+          await Share.shareXFiles(
+            [XFile(videoPath)],
+            text: message,
+          );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("WhatsApp is not installed!")),
           );

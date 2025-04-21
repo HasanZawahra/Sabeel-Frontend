@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:go_router/go_router.dart';
 import 'package:sabeel/services/navigation/routing_service.dart';
 import 'firebase_options.dart';
-import 'package:sabeel/constants/routes.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,31 +15,31 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Main extends StatefulWidget {
-  const Main({super.key});
-
-  @override
-  _MainState createState() => _MainState();
-}
-
-class _MainState extends State<Main> {
-
-  @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.go(splashScreenRoute);
-    });
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-    );
-  }
-  }
-
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
-  runApp(const MyApp());
+  try {
+    // Ensure Flutter is initialized
+    WidgetsFlutterBinding.ensureInitialized();
+    
+    // Initialize Firebase with a try-catch to handle initialization errors
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    
+    // Run the app
+    runApp(const MyApp());
+  } catch (e) {
+    // Add error handling for debugging
+    print('Error initializing app: $e');
+    // Still attempt to run a minimal app for error reporting
+    runApp(MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text('Error initializing app: $e', 
+            textDirection: TextDirection.ltr,
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+      ),
+    ));
+  }
 }
