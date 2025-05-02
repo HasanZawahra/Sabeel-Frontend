@@ -25,18 +25,21 @@ void initState() {
   });
 }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Semantics(
-          label: 'Splash screen animation',
-          hint: "wait a moment until the app is ready",
-          child: Image.asset('assets/gifs/splashscreen-en.gif'),
-        ),
-    );
-  }
-}
-
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Semantics(
+      label: 'Splash screen animation',
+      hint: "Wait a moment until the app is ready",
+      child: Image.asset(
+        'assets/gifs/splashscreen-en.gif',
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.cover,
+      ),
+    ),
+  );
+}}
 
 
 

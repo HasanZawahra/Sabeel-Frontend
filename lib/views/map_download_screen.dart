@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sabeel/constants/maps_names.dart';
 import 'package:sabeel/constants/routes.dart';
 import 'package:sabeel/services/auth/auth_service.dart';
+import 'package:sabeel/utils/background_grdiant.dart';
 import 'package:sabeel/utils/menu_action_dialog.dart';
 
 class MapDownloadScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
                 padding: EdgeInsets.all(16),
                 margin: EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: const Color.fromARGB(149, 224, 224, 224),
                   borderRadius: BorderRadius.circular(10)),
         child:  Semantics(
             label: 'Map of ${maps_names[i].split('_').join(' ')}',
@@ -91,40 +92,43 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
         ],
       ),
       
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Semantics(
-              label: 'University Map title',
-              child: Text(
-                "Choose a Map",
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 12),
-            Semantics(
-              label: 'Instruction text, Choose the Desired Map.',
-              child: Text(
-                "Choose the Desired Map.",
-                style: TextStyle(
-                    fontSize: 16,
-                    color: const Color.fromARGB(255, 127, 127, 127)),
-              ),
-            ),
-            SizedBox(height: 20),
-            GestureDetector(
-              onTap: () {},
-            
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: maps,
+      body: Container(
+        decoration: backgroundGradient(),
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Semantics(
+                label: 'University Map title',
+                child: Text(
+                  "Choose a Map",
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
+              ),
+              SizedBox(height: 12),
+              Semantics(
+                label: 'Instruction text, Choose the Desired Map.',
+                child: Text(
+                  "Choose the Desired Map.",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: const Color.fromARGB(255, 127, 127, 127)),
+                ),
+              ),
+              SizedBox(height: 20),
+              GestureDetector(
+                onTap: () {},
               
-            ),
-          ],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: maps,
+                  ),
+                
+              ),
+            ],
+          ),
         ),
       ),
     );
