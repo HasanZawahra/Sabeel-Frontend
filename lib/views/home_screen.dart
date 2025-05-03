@@ -12,7 +12,6 @@ import 'package:sabeel/utils/background_grdiant.dart';
 import 'package:sabeel/utils/buttons.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:sabeel/utils/menu_action_dialog.dart';
 import 'package:sabeel/utils/voise_indicator.dart';
@@ -31,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
   FlutterTts flutterTts = FlutterTts();
   bool _hasSpoken = false;
   String _lastSpokenPhrase = "";
+  DateTime? _lastAlertTime;
+
 
   @override
   void initState() {
@@ -62,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
       if (level < 0.2) return; // Ignore very low sound levels
     },
   );
+  _alertUserIfNoWordsSpoken();
+  _lastWords = '';
   setState(() {});
 }
 
@@ -192,13 +195,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         Positioned(
                           bottom: MediaQuery.of(context).size.height / 35,
                           right: MediaQuery.of(context).size.width / 20,
-                          child: Semantics(
+                          child: Semantics( 
                             label: 'Confirm button',
                             child: buildCircularButton(
-                                Icons.check, const Color(0xFF85AB59), () {
-                              player.play(
-                                  AssetSource('sounds/microphone/confirm.mp3'));
-                              context.push(cameraScreenRoute);
+                                Icons.check,_speechToText.isListening ? const Color.fromARGB(95, 133, 171, 89) : const Color.fromARGB(255, 133, 171, 89), () {
+                               if(!_speechToText.isListening){
+                                 player.play(
+                                    AssetSource('sounds/microphone/confirm.mp3'));
+                                context.push(cameraScreenRoute);}
                             }, 130),
                           ),
                         ),
@@ -318,10 +322,10 @@ class _HomeScreenState extends State<HomeScreen> {
           label: 'Title: $title',
           child: Text(
             title,
-            style: GoogleFonts.roboto(
+            style: TextStyle(
               fontSize: 60,
               fontWeight: FontWeight.bold,
-              height: 0.8,
+              height: 1.0,
             ),
           ),
         ),
@@ -392,5 +396,17 @@ void sos() {
   } else
     context.push(videoRecorderRoute);
     }
+
+
+  void _alertUserIfNoWordsSpoken() async {
+    if (_lastWords.isEmpty) {
+      DateTime now = DateTime.now();
+      if (_lastAlertTime == null ||
+          now.difference(_lastAlertTime!).inSeconds > 5) {
+        _lastAlertTime = now;
+        await flutterTts.speak("Please say your destination.");
+      }
+    }
+  }
 
 }

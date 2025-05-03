@@ -11,7 +11,7 @@ Widget buildCircularButton(IconData icon, Color color, VoidCallback onTap, doubl
           color: color,
           boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
         ),
-        child: Icon(icon, size: sizE, color: const Color.fromARGB(255, 0, 0, 0)),
+        child: Icon(icon, size: sizE, color: const Color.fromARGB(255, 255, 253, 253)),
       ),
     );
   }
@@ -24,7 +24,7 @@ Widget buildCircularButton(IconData icon, Color color, VoidCallback onTap, doubl
                     style: ElevatedButton.styleFrom(
                       backgroundColor: color,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      // padding: const EdgeInsets.symmetric(vertical: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
