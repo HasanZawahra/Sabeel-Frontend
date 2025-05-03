@@ -45,7 +45,7 @@ Widget build(BuildContext context) {
 
 Future<void> navigateToIdVerificationAutomatically(BuildContext context) async {
     if(AuthService.firebase().currentUser != null) {
-      context.go(mapDownloadRoute);
+      context.go(homeRoute);
     }
     else  context.go(idVerificationRoute);
 }

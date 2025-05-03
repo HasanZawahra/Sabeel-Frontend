@@ -69,68 +69,57 @@ class _MapDownloadScreenState extends State<MapDownloadScreen> {
     }
   }
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-        leading: AuthService.firebase().currentUser == null
-            ? Semantics(
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: const Color(0xFFDFFED5),
+      elevation: 0,
+      iconTheme: IconThemeData(color: Colors.black),
+      leading: AuthService.firebase().currentUser == null
+          ? Semantics(
               label: 'Back',
               child: IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    context.go(idVerificationRoute);
-                  },
-                ),
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  context.go(idVerificationRoute);
+                },
+              ),
             )
-            : null,
-        actions: [
-          if (AuthService.firebase().currentUser != null)
-            menuActionDialog(context)
-        ],
-      ),
-      
-      body: Container(
-        decoration: backgroundGradient(),
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Semantics(
-                label: 'University Map title',
-                child: Text(
-                  "Choose a Map",
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          : null,
+      actions: [
+        if (AuthService.firebase().currentUser != null)
+          menuActionDialog(context),
+      ],
+    ),
+    body: Container(
+      decoration: backgroundGradient(),
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: ListView( // Replaced Column with ListView
+          children: [
+            Semantics(
+              label: 'University Map title',
+              child: Text(
+                "Choose a Map",
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(height: 12), // Retained for spacing
+            Semantics(
+              label: 'Instruction text, Choose the Desired Map.',
+              child: Text(
+                "Choose the Desired Map.",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: const Color.fromARGB(255, 127, 127, 127),
                 ),
               ),
-              SizedBox(height: 12),
-              Semantics(
-                label: 'Instruction text, Choose the Desired Map.',
-                child: Text(
-                  "Choose the Desired Map.",
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: const Color.fromARGB(255, 127, 127, 127)),
-                ),
-              ),
-              SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {},
-              
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: maps,
-                  ),
-                
-              ),
-            ],
-          ),
+            ),
+            SizedBox(height: 20), // Retained for spacing
+            ...maps, // Add the list of map widgets directly
+          ],
         ),
       ),
-    );
-  }
-}
+    ),
+  );
+}}
