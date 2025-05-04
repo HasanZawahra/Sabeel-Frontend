@@ -402,9 +402,11 @@ void sos() {
     if (_lastWords.isEmpty) {
       DateTime now = DateTime.now();
       if (_lastAlertTime == null ||
-          now.difference(_lastAlertTime!).inSeconds > 5) {
+          now.difference(_lastAlertTime!).inSeconds > 10) {
         _lastAlertTime = now;
         await flutterTts.speak("Please say your destination.");
+        _hasSpoken = false; // Reset the flag after alerting
+        _lastWords = ''; // Clear the last words
       }
     }
   }
