@@ -39,7 +39,7 @@ Widget build(BuildContext context) {
       },
       child: Container(
         decoration: backgroundGradient(),
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(18.0),
         child: ListView(
           children: [
             Semantics(
