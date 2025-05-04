@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   FlutterTts flutterTts = FlutterTts();
   bool _hasSpoken = false;
   String _lastSpokenPhrase = "";
-  DateTime? _lastAlertTime;
+  Timer? _noWordsTimer; // Declare a Timer
 
 
   @override
@@ -54,18 +55,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Each time to start a speech recognition session
-  void _startListening() async {
+  
+void _startListening() async {
   await _speechToText.listen(
     onResult: _onSpeechResult,
-    // listenMode: ListenMode.dictation,
-    // partialResults: false, // Avoid catching partial results
     onSoundLevelChange: (level) {
       if (level < 0.2) return; // Ignore very low sound levels
     },
   );
-  _alertUserIfNoWordsSpoken();
   _lastWords = '';
   setState(() {});
+
+  // Cancel any existing timer before starting a new one
+  
 }
 
 
@@ -90,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
   }
+
   }
 
   void _toggleLayout() async {
@@ -97,10 +100,18 @@ class _HomeScreenState extends State<HomeScreen> {
       _speechEnabled = !_speechEnabled;
       if (_speechEnabled) {
         _startListening();
+        _noWordsTimer?.cancel();
+
+  // Start a periodic timer to check if no words are spoken
+    _noWordsTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+        _alertUserIfNoWordsSpoken();
+     
+    });
       } else {
         _stopListening();
         _lastWords = '';
         _hasSpoken = false;
+        _noWordsTimer?.cancel(); // Cancel the timer when speech recognition is stopped
       }
     });
   }
@@ -172,11 +183,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 
                                       child: Semantics(
                                         label:   _speechToText.isListening
-                                              ? 'You said: $_lastWords'
+                                              ? 'Speach detected: $_lastWords'
                                               : 'Listening...',
                                         child: Text(
                                           _speechToText.isListening
-                                              ? 'You said: $_lastWords'
+                                              ? 'Speach detected: $_lastWords'
                                               : 'Listening...',
                                           style: TextStyle(
                                             fontSize: 24,
@@ -399,14 +410,15 @@ void sos() {
 
 
   void _alertUserIfNoWordsSpoken() async {
-    if (_lastWords.isEmpty) {
-      DateTime now = DateTime.now();
-      if (_lastAlertTime == null ||
-          now.difference(_lastAlertTime!).inSeconds > 5) {
-        _lastAlertTime = now;
-        await flutterTts.speak("Please say your destination.");
-      }
-    }
+  if (_speechToText.isListening && _lastWords.length == 0) {
+      await flutterTts.stop();
+      await flutterTts.speak("Please say your destination.");
+      Future.delayed(Duration(seconds: 3), () {
+      _hasSpoken = false;
+      _lastWords = ''; 
+      });
+    // }
   }
+}
 
 }
