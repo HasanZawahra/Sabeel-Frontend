@@ -30,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _lastWords = '';
   FlutterTts flutterTts = FlutterTts();
   bool _hasSpoken = false;
+  bool _thereDestinations = false;
   String _lastSpokenPhrase = "";
   Timer? _noWordsTimer; // Declare a Timer
 
@@ -209,8 +210,8 @@ void _startListening() async {
                           child: Semantics( 
                             label: 'Confirm button',
                             child: buildCircularButton(
-                                Icons.check,_speechToText.isListening ? const Color.fromARGB(95, 133, 171, 89) : const Color.fromARGB(255, 133, 171, 89), () {
-                               if(!_speechToText.isListening){
+                                Icons.check, !_thereDestinations ? const Color.fromARGB(95, 133, 171, 89) : const Color.fromARGB(255, 133, 171, 89), () {
+                               if(_thereDestinations){
                                  player.play(
                                     AssetSource('sounds/microphone/confirm.mp3'));
                                 context.push(cameraScreenRoute);}
@@ -360,6 +361,7 @@ void _startListening() async {
         if (!_hasSpoken) {
           speak(dist);
           _hasSpoken = true;
+          _thereDestinations = true;
         }
         return true;
       }
@@ -383,7 +385,7 @@ void _startListening() async {
     });
   });
 
-  Future.delayed(Duration(seconds: 5), () {
+  Future.delayed(Duration(seconds: 10), () {
     _hasSpoken = false;
   });
 }
